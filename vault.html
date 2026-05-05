@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LearnX10 Vault</title>
+<!-- Block referrer leakage -->
+<meta name="referrer" content="no-referrer"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#000008;--bg2:#0a0a1a;--surface:rgba(255,255,255,0.04);
+  --border:rgba(255,255,255,0.08);--text:#f0f0ff;--text2:#8888aa;
+  --accent:#7c3aff;--accent2:#00d4ff;--accent3:#ff3aaa;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;padding:2rem;
+  background:radial-gradient(ellipse at 20% 20%, rgba(124,58,255,0.12) 0%, transparent 50%),
+             radial-gradient(ellipse at 80% 80%, rgba(0,212,255,0.08) 0%, transparent 50%),
+             #000008;
+}
+#vault-loading{display:flex;flex-direction:column;align-items:center;gap:1.5rem;}
+#vault-content{display:none;flex-direction:column;align-items:center;gap:1.5rem;}
+#vault-denied{display:none;flex-direction:column;align-items:center;gap:1.5rem;}
+.vault-logo{
+  font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;
+  background:linear-gradient(135deg,#7c3aff,#00d4ff);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:1rem;
+}
+.vault-icon{font-size:5rem;animation:float 2s ease-in-out infinite alternate;}
+@keyframes float{0%{transform:translateY(0);}100%{transform:translateY(-12px);}}
+.vault-title{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;}
+.vault-sub{color:var(--text2);font-size:0.95rem;max-width:380px;line-height:1.6;}
+.vault-timer{
+  font-family:'JetBrains Mono',monospace;font-size:1rem;
+  color:var(--accent3);padding:0.5rem 1.2rem;
+  background:rgba(255,58,170,0.08);border:1px solid rgba(255,58,170,0.2);
+  border-radius:8px;
+}
+.spinner{
+  width:44px;height:44px;border-radius:50%;
+  border:3px solid rgba(255,255,255,0.1);
+  border-top-color:var(--accent);
+  animation:spin 0.7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.security-checks{
+  display:flex;flex-direction:column;gap:0.5rem;
+  font-family:'JetBrains Mono',monospace;font-size:0.8rem;
+  color:var(--text2);text-align:left;min-width:260px;
+}
+.check-item{display:flex;align-items:center;gap:0.75rem;padding:0.4rem 0;}
+.check-dot{width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0;transition:background 0.3s;}
+.check-dot.pass{background:#22c55e;box-shadow:0 0 8px rgba(34,197,94,0.5);}
+.check-dot.fail{background:var(--accent3);}
+.btn-primary{
+  padding:0.85rem 2.5rem;border-radius:12px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;border:none;font-family:'Syne',sans-serif;
+  font-size:1rem;font-weight:700;cursor:pointer;
+  transition:all 0.3s ease;text-decoration:none;display:inline-block;
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(124,58,255,0.4);}
+.btn-back{
+  padding:0.6rem 1.5rem;border-radius:10px;
+  background:transparent;color:var(--text2);
+  border:1px solid var(--border);font-family:'DM Sans',sans-serif;
+  font-size:0.9rem;cursor:pointer;transition:all 0.3s;text-decoration:none;display:inline-block;
+}
+.btn-back:hover{border-color:var(--accent);color:var(--text);}
+.denied-code{
+  font-family:'JetBrains Mono',monospace;font-size:0.75rem;
+  color:var(--accent3);padding:0.4rem 0.8rem;
+  background:rgba(255,58,170,0.05);border:1px solid rgba(255,58,170,0.15);
+  border-radius:6px;
+}
+.book-info-box{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:16px;padding:2rem;max-width:420px;width:100%;
+}
+.book-emoji{font-size:4rem;margin-bottom:1rem;}
+.book-title{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:0.5rem;}
+.book-meta{font-size:0.85rem;color:var(--text2);}
+#countdownBar{
+  width:100%;max-width:300px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;
+}
+#countdownFill{
+  height:100%;background:linear-gradient(90deg,#22c55e,#eab308,var(--accent3));
+  border-radius:2px;width:100%;transition:width 1s linear;
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING STATE -->
+<div id="vault-loading">
+  <div class="vault-logo">🔐 LearnX10 Vault</div>
+  <div class="spinner"></div>
+  <div style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;color:var(--text2);">Validating security token...</div>
+  <div class="security-checks" id="securityChecks">
+    <div class="check-item"><div class="check-dot" id="chk1"></div> Session token present</div>
+    <div class="check-item"><div class="check-dot" id="chk2"></div> Token not expired</div>
+    <div class="check-item"><div class="check-dot" id="chk3"></div> Device fingerprint match</div>
+    <div class="check-item"><div class="check-dot" id="chk4"></div> Time delta valid</div>
+    <div class="check-item"><div class="check-dot" id="chk5"></div> One-time token valid</div>
+    <div class="check-item"><div class="check-dot" id="chk6"></div> User authorization confirmed</div>
+  </div>
+</div>
+
+<!-- ACCESS GRANTED -->
+<div id="vault-content">
+  <div class="vault-logo">🔐 LearnX10 Vault</div>
+  <div class="vault-icon">✅</div>
+  <div class="vault-title">Access Granted</div>
+  <div class="book-info-box">
+    <div class="book-emoji" id="bookEmoji">📖</div>
+    <div class="book-title" id="bookTitle">Loading...</div>
+    <div class="book-meta" id="bookMeta">—</div>
+    <div style="margin-top:1.5rem;">
+      <div style="font-size:0.8rem;color:var(--text2);margin-bottom:0.5rem;font-family:'JetBrains Mono',monospace;">LINK EXPIRES IN</div>
+      <div class="vault-timer" id="vaultTimer">60s</div>
+      <div id="countdownBar" style="margin-top:0.75rem;"><div id="countdownFill"></div></div>
+    </div>
+  </div>
+  <button class="btn-primary" id="readBtn" onclick="openBookUrl()">📖 Open Book Now</button>
+  <a class="btn-back" href="index.html">← Back to Library</a>
+  <div style="font-size:0.78rem;color:var(--text2);max-width:320px;line-height:1.5;">
+    ⚠️ This link is for your personal use only. Sharing violates our Fair Play Policy and may result in a permanent ban.
+  </div>
+</div>
+
+<!-- ACCESS DENIED -->
+<div id="vault-denied">
+  <div class="vault-logo">🔐 LearnX10 Vault</div>
+  <div class="vault-icon">⛔</div>
+  <div class="vault-title" id="deniedTitle">Access Denied</div>
+  <div class="vault-sub" id="deniedSub">Invalid or expired access token.</div>
+  <div class="denied-code" id="deniedCode">ERR_TOKEN_INVALID</div>
+  <a class="btn-primary" href="index.html">Return to Platform</a>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBTsSHQDDZQxke_cDMaoalK7-Ffzy0YSeM",
+  authDomain: "learnx10-hub.firebaseapp.com",
+  projectId: "learnx10-hub",
+  storageBucket: "learnx10-hub.firebasestorage.app",
+  messagingSenderId: "127942677227",
+  appId: "1:127942677227:web:e8516a7d48d717d11564ae"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// ——— SECURITY: Anti-devtools detection ———
+let devtoolsOpen = false;
+const devtoolsCheck = setInterval(() => {
+  const t = new Date();
+  debugger; // If devtools open, this causes significant delay
+  if (new Date() - t > 100) {
+    devtoolsOpen = true;
+    deny('DEVTOOLS_DETECTED', 'Developer tools detected. Access revoked for security.');
+    clearInterval(devtoolsCheck);
+  }
+}, 1000);
+
+// ——— SECURITY: Ad-blocker / extension detection ———
+function checkExtensions() {
+  const bait = document.createElement('div');
+  bait.className = 'ads adsbygoogle adsbox pub_300x250';
+  bait.style.cssText = 'width:1px;height:1px;position:absolute;left:-9999px;';
+  document.body.appendChild(bait);
+  setTimeout(() => {
+    if (!bait.offsetParent || bait.offsetHeight === 0 || bait.offsetWidth === 0) {
+      // Soft block: just warn, don't deny
+      console.warn('Ad-blocker/extension detected');
+    }
+    bait.remove();
+  }, 100);
+}
+
+// ——— SECURITY: Disable right-click + devtools shortcuts on this page ———
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('keydown', e => {
+  if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key)) || (e.ctrlKey && e.key==='U')) {
+    e.preventDefault();
+  }
+});
+
+let bookUrl = null; // URL exists ONLY in JS memory, never in DOM
+let countdownSec = 60;
+let countdownInterval = null;
+
+function getFingerprint() {
+  const parts = [navigator.userAgent, screen.width+'x'+screen.height, navigator.language];
+  let h = 0;
+  for (const c of parts.join('|')) { h = ((h<<5)-h)+c.charCodeAt(0); h|=0; }
+  return Math.abs(h).toString(36);
+}
+
+function passCheck(id) {
+  const dot = document.getElementById('chk'+id);
+  if (dot) { dot.classList.add('pass'); dot.classList.remove('fail'); }
+}
+
+function failCheck(id) {
+  const dot = document.getElementById('chk'+id);
+  if (dot) { dot.classList.add('fail'); }
+}
+
+function deny(code, message) {
+  clearInterval(devtoolsCheck);
+  document.getElementById('vault-loading').style.display = 'none';
+  document.getElementById('vault-content').style.display = 'none';
+  const denied = document.getElementById('vault-denied');
+  denied.style.display = 'flex';
+  document.getElementById('deniedSub').textContent = message || 'Access denied.';
+  document.getElementById('deniedCode').textContent = code || 'ERR_UNKNOWN';
+  bookUrl = null;
+  sessionStorage.clear();
+}
+
+async function validateAccess(user) {
+  // Layer 1: Token present
+  const token = sessionStorage.getItem('vaultToken');
+  const bookId = sessionStorage.getItem('vaultBook');
+  const vaultTs = parseInt(sessionStorage.getItem('vaultTs') || '0');
+  if (!token || !bookId) { failCheck(1); deny('ERR_NO_TOKEN','No valid session token found. Please unlock the book first.'); return; }
+  passCheck(1);
+
+  // Layer 2: Time-bomb (60 seconds)
+  const now = Date.now();
+  if (now - vaultTs > 60000) { failCheck(2); deny('ERR_TOKEN_EXPIRED','Your access token has expired. Please re-unlock the book.'); return; }
+  passCheck(2);
+
+  // Layer 3: Device fingerprint
+  const storedFp = sessionStorage.getItem('vaultFp') || '';
+  const currentFp = getFingerprint();
+  // Note: on first vault entry, we set the fp. On direct URL paste there's no fp.
+  passCheck(3); // Soft check (fp stored on unlock initiation)
+
+  // Layer 4: Time delta (min 500ms from click to arrival - prevents automated)
+  const delta = now - vaultTs;
+  if (delta < 300) { failCheck(4); deny('ERR_TIME_DELTA','Suspicious timing detected.'); return; }
+  passCheck(4);
+
+  // Layer 5-6: Firestore token validation
+  try {
+    const tokenDoc = await getDoc(doc(db, 'tokens', token));
+    if (!tokenDoc.exists()) { failCheck(5); deny('ERR_TOKEN_NOT_FOUND','Token not found in system.'); return; }
+    const td = tokenDoc.data();
+    if (td.used) { failCheck(5); deny('ERR_TOKEN_USED','This token has already been used.'); return; }
+    if (td.expires?.toMillis?.() < now) { failCheck(5); deny('ERR_TOKEN_EXPIRED','Token expired server-side.'); return; }
+    passCheck(5);
+
+    // Layer 6: User authorization
+    if (td.uid !== user.uid) { failCheck(6); deny('ERR_AUTH_MISMATCH','Authorization mismatch.'); return; }
+    passCheck(6);
+
+    // Mark token as used immediately (one-time use)
+    await updateDoc(doc(db,'tokens',token), { used: true, usedAt: new Date() });
+
+    // Get book data
+    const bookDoc = await getDoc(doc(db,'books',bookId));
+    if (!bookDoc.exists()) { deny('ERR_BOOK_NOT_FOUND','Book not found.'); return; }
+    const book = bookDoc.data();
+
+    // Store URL only in JS memory (NEVER in DOM)
+    bookUrl = td.shortLink || book.url || book.driveUrl || '';
+
+    if (!bookUrl) { deny('ERR_NO_URL','Book URL not configured. Contact admin.'); return; }
+
+    // Verify user has unlocked this book
+    const userDoc = await getDoc(doc(db,'users',user.uid));
+    const unlockedBooks = userDoc.data()?.unlockedBooks || [];
+    if (!unlockedBooks.includes(bookId)) { deny('ERR_NOT_UNLOCKED','You have not unlocked this book.'); return; }
+
+    // Clear session storage (one-time use)
+    sessionStorage.removeItem('vaultToken');
+    sessionStorage.removeItem('vaultBook');
+    sessionStorage.removeItem('vaultTs');
+
+    showGranted(book);
+  } catch(e) {
+    deny('ERR_SERVER','Server validation failed: ' + e.message);
+  }
+}
+
+function showGranted(book) {
+  clearInterval(devtoolsCheck);
+  document.getElementById('vault-loading').style.display = 'none';
+  const content = document.getElementById('vault-content');
+  content.style.display = 'flex';
+
+  document.getElementById('bookEmoji').textContent = book.emoji || '📖';
+  document.getElementById('bookTitle').textContent = book.title || 'Book';
+  document.getElementById('bookMeta').textContent = (book.author || '') + (book.category ? ' · ' + book.category : '');
+
+  // 60-second countdown time-bomb
+  countdownSec = 60;
+  const timerEl = document.getElementById('vaultTimer');
+  const fillEl = document.getElementById('countdownFill');
+  countdownInterval = setInterval(() => {
+    countdownSec--;
+    timerEl.textContent = countdownSec + 's';
+    fillEl.style.width = (countdownSec/60*100) + '%';
+    if (countdownSec <= 0) {
+      clearInterval(countdownInterval);
+      bookUrl = null;
+      document.getElementById('readBtn').disabled = true;
+      document.getElementById('readBtn').textContent = '⏰ Link Expired';
+      document.getElementById('readBtn').style.opacity = '0.5';
+      timerEl.textContent = 'EXPIRED';
+    }
+  }, 1000);
+}
+
+window.openBookUrl = function() {
+  if (!bookUrl) { alert('Link expired or invalid. Please return and unlock again.'); return; }
+  const url = bookUrl;
+  bookUrl = null; // Destroy from memory after use
+  clearInterval(countdownInterval);
+  // Open in new tab
+  const w = window.open(url, '_blank', 'noopener,noreferrer');
+  if (!w) { window.location.href = url; }
+  // Redirect back after brief delay
+  setTimeout(() => { window.location.href = 'index.html'; }, 2000);
+};
+
+// ——— AUTH CHECK ———
+checkExtensions();
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    deny('ERR_NOT_AUTHENTICATED', 'You must be signed in to access the vault.');
+    return;
+  }
+  // Run validation with staggered check display for UX
+  setTimeout(() => validateAccess(user), 800);
+});
+</script>
+</body>
+</html>

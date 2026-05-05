@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LearnX10 — Supreme Admin Console</title>
+<meta name="robots" content="noindex, nofollow"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#000008;--bg2:#060612;--bg3:#0d0d20;
+  --surface:rgba(255,255,255,0.04);--surface2:rgba(255,255,255,0.07);
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.12);
+  --text:#f0f0ff;--text2:#7070a0;
+  --accent:#7c3aff;--accent2:#00d4ff;--accent3:#ff3aaa;
+  --success:#22c55e;--warning:#f59e0b;--danger:#ef4444;
+  --radius:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* LOGIN SCREEN */
+#adminLogin{
+  position:fixed;inset:0;z-index:9999;
+  background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  padding:2rem;
+}
+.login-card{
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:20px;padding:3rem;width:100%;max-width:420px;
+  box-shadow:0 0 80px rgba(124,58,255,0.15);
+}
+.admin-logo{
+  font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;
+  background:linear-gradient(135deg,#7c3aff,#00d4ff);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:0.3rem;
+}
+.admin-badge{
+  display:inline-block;padding:0.25rem 0.75rem;border-radius:20px;
+  background:rgba(124,58,255,0.1);border:1px solid rgba(124,58,255,0.3);
+  font-size:0.75rem;color:var(--accent);font-family:'JetBrains Mono',monospace;
+  margin-bottom:2rem;letter-spacing:1px;
+}
+.form-group{margin-bottom:1rem;}
+.form-label{font-size:0.82rem;color:var(--text2);margin-bottom:0.4rem;display:block;font-weight:500;}
+.form-input{
+  width:100%;padding:0.75rem 1rem;border-radius:10px;
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.95rem;
+  outline:none;transition:all 0.3s;
+}
+.form-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,58,255,0.1);}
+.form-input::placeholder{color:var(--text2);}
+.submit-btn{
+  width:100%;padding:0.85rem;border-radius:12px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;border:none;font-family:'Syne',sans-serif;
+  font-size:1rem;font-weight:700;cursor:pointer;
+  transition:all 0.3s;margin-top:0.5rem;
+}
+.submit-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(124,58,255,0.4);}
+.error-msg{color:var(--accent3);font-size:0.85rem;margin-top:0.75rem;text-align:center;display:none;}
+
+/* CONSOLE LAYOUT */
+#adminConsole{display:none;}
+.console-layout{display:flex;min-height:100vh;}
+.sidebar{
+  width:260px;flex-shrink:0;
+  background:var(--bg2);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+}
+.sidebar-header{
+  padding:1.5rem;border-bottom:1px solid var(--border);
+}
+.sidebar-logo{
+  font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;
+  background:linear-gradient(135deg,#7c3aff,#00d4ff);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.sidebar-sub{font-size:0.72rem;color:var(--text2);font-family:'JetBrains Mono',monospace;margin-top:0.2rem;letter-spacing:1px;}
+.sidebar-nav{padding:1rem;flex:1;}
+.nav-section{margin-bottom:1.5rem;}
+.nav-section-title{
+  font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;
+  color:var(--text2);padding:0 0.5rem;margin-bottom:0.5rem;font-weight:600;
+}
+.nav-item{
+  display:flex;align-items:center;gap:0.75rem;
+  padding:0.65rem 0.75rem;border-radius:10px;
+  cursor:pointer;transition:all 0.2s;
+  font-size:0.9rem;font-weight:500;color:var(--text2);
+  border:1px solid transparent;
+}
+.nav-item:hover{background:var(--surface);color:var(--text);}
+.nav-item.active{
+  background:linear-gradient(135deg,rgba(124,58,255,0.12),rgba(0,212,255,0.06));
+  border-color:rgba(124,58,255,0.2);color:var(--text);
+}
+.nav-icon{width:20px;text-align:center;font-size:1rem;}
+.sidebar-footer{
+  padding:1rem 1.5rem;border-top:1px solid var(--border);
+}
+.admin-info{display:flex;align-items:center;gap:0.75rem;}
+.admin-avatar{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;font-size:1rem;
+}
+.admin-name{font-size:0.85rem;font-weight:600;}
+.admin-role{font-size:0.72rem;color:var(--accent);font-family:'JetBrains Mono',monospace;}
+
+/* MAIN CONTENT */
+.main-content{flex:1;display:flex;flex-direction:column;overflow-x:hidden;}
+.console-topbar{
+  padding:1rem 2rem;background:var(--bg2);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:1rem;position:sticky;top:0;z-index:50;
+}
+.page-title{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;}
+.topbar-actions{display:flex;gap:0.75rem;}
+.action-btn{
+  padding:0.5rem 1rem;border-radius:8px;border:1px solid var(--border);
+  background:var(--surface);color:var(--text);font-size:0.85rem;cursor:pointer;
+  transition:all 0.2s;font-family:'DM Sans',sans-serif;font-weight:500;
+}
+.action-btn:hover{border-color:var(--accent);}
+.action-btn.danger{border-color:rgba(239,68,68,0.3);color:var(--danger);}
+.action-btn.danger:hover{background:rgba(239,68,68,0.1);}
+.action-btn.success{border-color:rgba(34,197,94,0.3);color:var(--success);}
+.action-btn.success:hover{background:rgba(34,197,94,0.1);}
+
+.console-panel{padding:2rem;flex:1;display:none;}
+.console-panel.active{display:block;}
+
+/* WIDGETS */
+.metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:2rem;}
+.metric-card{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--radius);padding:1.5rem;position:relative;overflow:hidden;
+}
+.metric-card::before{
+  content:'';position:absolute;inset:0;opacity:0.05;
+  background:linear-gradient(135deg,var(--accent),transparent);
+}
+.metric-label{font-size:0.78rem;color:var(--text2);text-transform:uppercase;letter-spacing:1px;font-weight:600;}
+.metric-value{
+  font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:800;
+  margin:0.5rem 0;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.metric-sub{font-size:0.78rem;color:var(--text2);}
+.metric-danger .metric-value{background:linear-gradient(135deg,var(--accent3),var(--danger));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.metric-success .metric-value{background:linear-gradient(135deg,var(--success),#86efac);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+
+/* TABLES */
+.data-table{width:100%;border-collapse:collapse;font-size:0.88rem;}
+.data-table th{
+  text-align:left;padding:0.75rem 1rem;
+  border-bottom:1px solid var(--border2);
+  font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;
+  color:var(--text2);font-weight:600;
+}
+.data-table td{
+  padding:0.75rem 1rem;border-bottom:1px solid var(--border);
+  vertical-align:middle;
+}
+.data-table tr:hover td{background:var(--surface);}
+.table-wrap{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;overflow-x:auto;
+}
+.pill{
+  display:inline-block;padding:0.2rem 0.6rem;border-radius:20px;font-size:0.72rem;font-weight:600;
+  font-family:'JetBrains Mono',monospace;
+}
+.pill-purple{background:rgba(124,58,255,0.15);color:var(--accent);}
+.pill-blue{background:rgba(0,212,255,0.1);color:var(--accent2);}
+.pill-red{background:rgba(239,68,68,0.1);color:var(--danger);}
+.pill-green{background:rgba(34,197,94,0.1);color:var(--success);}
+.pill-yellow{background:rgba(245,158,11,0.1);color:var(--warning);}
+
+/* FORMS */
+.panel-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+@media(max-width:900px){.panel-grid{grid-template-columns:1fr;}}
+.form-card{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--radius);padding:1.75rem;
+}
+.form-card-title{
+  font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;
+  margin-bottom:1.25rem;padding-bottom:0.75rem;
+  border-bottom:1px solid var(--border);
+}
+.form-row{margin-bottom:1rem;}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
+.input-sm{
+  width:100%;padding:0.6rem 0.9rem;border-radius:8px;
+  background:var(--surface2);border:1px solid var(--border);
+  color:var(--text);font-size:0.88rem;outline:none;font-family:'DM Sans',sans-serif;
+  transition:border-color 0.2s;
+}
+.input-sm:focus{border-color:var(--accent);}
+.input-sm::placeholder{color:var(--text2);}
+textarea.input-sm{min-height:80px;resize:vertical;}
+select.input-sm{cursor:pointer;}
+.form-label-sm{font-size:0.78rem;color:var(--text2);margin-bottom:0.35rem;display:block;font-weight:500;}
+.btn-sm{
+  padding:0.55rem 1.1rem;border-radius:8px;border:none;
+  font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.2s;
+}
+.btn-primary-sm{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;}
+.btn-primary-sm:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(124,58,255,0.35);}
+.btn-danger-sm{background:rgba(239,68,68,0.15);color:var(--danger);border:1px solid rgba(239,68,68,0.2);}
+.btn-danger-sm:hover{background:rgba(239,68,68,0.25);}
+.btn-success-sm{background:rgba(34,197,94,0.15);color:var(--success);border:1px solid rgba(34,197,94,0.2);}
+.btn-success-sm:hover{background:rgba(34,197,94,0.25);}
+.btn-warning-sm{background:rgba(245,158,11,0.15);color:var(--warning);border:1px solid rgba(245,158,11,0.2);}
+.btn-warning-sm:hover{background:rgba(245,158,11,0.25);}
+
+/* TOGGLE */
+.toggle-wrap{display:flex;align-items:center;justify-content:space-between;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;padding:1rem 1.25rem;}
+.toggle-info h4{font-weight:600;font-size:0.95rem;}
+.toggle-info p{font-size:0.8rem;color:var(--text2);margin-top:0.2rem;}
+.toggle{position:relative;width:46px;height:26px;flex-shrink:0;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-slider{
+  position:absolute;inset:0;border-radius:26px;
+  background:var(--border2);cursor:pointer;transition:0.3s;
+}
+.toggle-slider::before{
+  content:'';position:absolute;height:20px;width:20px;
+  left:3px;bottom:3px;border-radius:50%;
+  background:#fff;transition:0.3s;
+}
+.toggle input:checked + .toggle-slider{background:var(--accent);}
+.toggle input:checked + .toggle-slider::before{transform:translateX(20px);}
+
+/* ALERTS */
+.alert{padding:0.75rem 1rem;border-radius:8px;font-size:0.85rem;margin-bottom:1rem;}
+.alert-success{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);color:var(--success);}
+.alert-danger{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);color:var(--danger);}
+.alert-info{background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.2);color:var(--accent2);}
+
+/* MOBILE SIDEBAR */
+.menu-btn{display:none;background:none;border:none;color:var(--text);font-size:1.4rem;cursor:pointer;}
+@media(max-width:768px){
+  .sidebar{position:fixed;left:-260px;top:0;z-index:200;height:100vh;transition:left 0.3s;}
+  .sidebar.open{left:0;}
+  .menu-btn{display:block;}
+  .console-panel{padding:1.25rem;}
+  .panel-grid{grid-template-columns:1fr;}
+  .form-row-2{grid-template-columns:1fr;}
+}
+.overlay-bg{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:190;display:none;}
+.overlay-bg.show{display:block;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="adminLogin">
+  <div class="login-card">
+    <div class="admin-logo">LearnX10</div>
+    <div class="admin-badge">⚡ SUPREME ADMIN CONSOLE</div>
+    <h2 style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:0.5rem;">Admin Access</h2>
+    <p style="color:var(--text2);font-size:0.88rem;margin-bottom:2rem;">This panel is restricted to authorized administrators only.</p>
+    <div class="form-group">
+      <label class="form-label">Email Address</label>
+      <input class="form-input" type="email" id="adminEmail" placeholder="admin@learnx10.com"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input class="form-input" type="password" id="adminPassword" placeholder="••••••••••"/>
+    </div>
+    <button class="submit-btn" onclick="adminLogin()">🔐 Access Console</button>
+    <div class="error-msg" id="loginError">Invalid credentials. Access denied.</div>
+  </div>
+</div>
+
+<div id="adminConsole">
+  <div class="overlay-bg" id="overlayBg" onclick="closeSidebar()"></div>
+  <div class="console-layout">
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="adminSidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">LearnX10</div>
+        <div class="sidebar-sub">ADMIN CONSOLE v2.0</div>
+      </div>
+      <div class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">Overview</div>
+          <div class="nav-item active" onclick="showPanel('dashboard',this)"><span class="nav-icon">📊</span> Dashboard</div>
+          <div class="nav-item" onclick="showPanel('analytics',this)"><span class="nav-icon">📈</span> Analytics</div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Content</div>
+          <div class="nav-item" onclick="showPanel('books',this)"><span class="nav-icon">📚</span> Library Manager</div>
+          <div class="nav-item" onclick="showPanel('giveaways',this)"><span class="nav-icon">🎁</span> Giveaways</div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Users</div>
+          <div class="nav-item" onclick="showPanel('users',this)"><span class="nav-icon">👥</span> User Manager</div>
+          <div class="nav-item" onclick="showPanel('messages',this)"><span class="nav-icon">💬</span> Messages</div>
+          <div class="nav-item" onclick="showPanel('notifications',this)"><span class="nav-icon">🔔</span> Send Notification</div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">System</div>
+          <div class="nav-item" onclick="showPanel('sitectl',this)"><span class="nav-icon">⚙️</span> Site Controls</div>
+          <div class="nav-item" onclick="showPanel('security',this)"><span class="nav-icon">🛡️</span> Security Log</div>
+        </div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="admin-info">
+          <div class="admin-avatar">👑</div>
+          <div>
+            <div class="admin-name">Rakshit Pal</div>
+            <div class="admin-role">SUPER ADMIN</div>
+          </div>
+        </div>
+        <button onclick="adminSignOut()" style="margin-top:1rem;width:100%;" class="action-btn danger">Sign Out</button>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main-content">
+      <div class="console-topbar">
+        <div style="display:flex;align-items:center;gap:1rem;">
+          <button class="menu-btn" onclick="openSidebar()">☰</button>
+          <div class="page-title" id="pageTitle">Dashboard</div>
+        </div>
+        <div class="topbar-actions">
+          <button class="action-btn" onclick="exportCSV()">📥 Export CSV</button>
+          <button class="action-btn" onclick="refreshData()">🔄 Refresh</button>
+          <a href="index.html" target="_blank" class="action-btn">🌐 View Site</a>
+        </div>
+      </div>
+
+      <!-- DASHBOARD -->
+      <div class="console-panel active" id="panel-dashboard">
+        <div class="metrics-grid" id="dashMetrics">
+          <div class="metric-card">
+            <div class="metric-label">Total Users</div>
+            <div class="metric-value" id="mTotalUsers">—</div>
+            <div class="metric-sub">Registered learners</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Total XP Economy</div>
+            <div class="metric-value" id="mTotalXp">—</div>
+            <div class="metric-sub">XP in circulation</div>
+          </div>
+          <div class="metric-card metric-success">
+            <div class="metric-label">Books Unlocked</div>
+            <div class="metric-value" id="mUnlocks">—</div>
+            <div class="metric-sub">Total unlocks</div>
+          </div>
+          <div class="metric-card metric-danger">
+            <div class="metric-label">Hacker Attempts</div>
+            <div class="metric-value" id="mHackers">—</div>
+            <div class="metric-sub">Blocked this month</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Active Giveaways</div>
+            <div class="metric-value" id="mGiveaways">—</div>
+            <div class="metric-sub">Currently running</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Telegram Members</div>
+            <div class="metric-value" id="mTelegram">—</div>
+            <div class="metric-sub" id="mTelegramSub">Loading...</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+          <div class="form-card">
+            <div class="form-card-title">🔥 Recent Registrations</div>
+            <div id="recentUsers" style="color:var(--text2);font-size:0.85rem;">Loading...</div>
+          </div>
+          <div class="form-card">
+            <div class="form-card-title">📬 Pending Admin Messages</div>
+            <div id="pendingMessages" style="color:var(--text2);font-size:0.85rem;">Loading...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOOKS -->
+      <div class="console-panel" id="panel-books">
+        <div class="panel-grid">
+          <div class="form-card">
+            <div class="form-card-title">➕ Add New Book</div>
+            <div class="form-row">
+              <label class="form-label-sm">Book Title *</label>
+              <input class="input-sm" id="bookTitle" placeholder="Enter book title"/>
+            </div>
+            <div class="form-row">
+              <label class="form-label-sm">Author</label>
+              <input class="input-sm" id="bookAuthor" placeholder="Author name"/>
+            </div>
+            <div class="form-row">
+              <label class="form-label-sm">Description</label>
+              <textarea class="input-sm" id="bookDesc" placeholder="Short description..."></textarea>
+            </div>
+            <div class="form-row-2">
+              <div>
+                <label class="form-label-sm">Category</label>
+                <select class="input-sm" id="bookCat">
+                  <option value="Science">Science</option>
+                  <option value="Technology">Technology</option>
+                  <option value="Mathematics">Mathematics</option>
+                  <option value="Self-Help">Self-Help</option>
+                  <option value="Finance">Finance</option>
+                  <option value="Language">Language</option>
+                  <option value="History">History</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label-sm">XP Cost</label>
+                <input class="input-sm" id="bookXp" type="number" placeholder="100" value="100"/>
+              </div>
+            </div>
+            <div class="form-row">
+              <label class="form-label-sm">Emoji Icon</label>
+              <input class="input-sm" id="bookEmoji" placeholder="📖" value="📖"/>
+            </div>
+            <div class="form-row">
+              <label class="form-label-sm">Destination Short Link / URL *</label>
+              <input class="input-sm" id="bookUrl" placeholder="https://drive.google.com/..."/>
+            </div>
+            <div style="margin-top:1rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
+              <button class="btn-sm btn-primary-sm" onclick="addBook()">➕ Add Book</button>
+              <button class="btn-sm btn-warning-sm" onclick="openJsonImport()">📥 Import JSON</button>
+            </div>
+          </div>
+          <div class="form-card" style="overflow-y:auto;max-height:600px;">
+            <div class="form-card-title" style="display:flex;justify-content:space-between;align-items:center;">
+              📚 Book List
+              <span id="bookCount" style="font-size:0.78rem;color:var(--text2);font-family:'JetBrains Mono',monospace;font-weight:400;"></span>
+            </div>
+            <div id="adminBookList" style="color:var(--text2);font-size:0.85rem;">Loading...</div>
+          </div>
+        </div>
+        <!-- JSON IMPORT -->
+        <div class="form-card" style="margin-top:1.5rem;display:none;" id="jsonImportCard">
+          <div class="form-card-title">📥 Bulk Import via JSON</div>
+          <div class="alert alert-info" style="margin-bottom:1rem;">Format: Array of {title, author, description, category, xpCost, emoji, shortLink}</div>
+          <textarea class="input-sm" id="jsonImportData" placeholder='[{"title":"Book Name","author":"Author","xpCost":100,"emoji":"📖","shortLink":"https://..."}]' style="min-height:150px;"></textarea>
+          <div style="margin-top:1rem;display:flex;gap:0.75rem;">
+            <button class="btn-sm btn-primary-sm" onclick="importJson()">Import Books</button>
+            <button class="btn-sm btn-danger-sm" onclick="document.getElementById('jsonImportCard').style.display='none'">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- GIVEAWAYS -->
+      <div class="console-panel" id="panel-giveaways">
+        <div class="panel-grid">
+          <div class="form-card">
+            <div class="form-card-title">➕ Create Giveaway</div>
+            <div class="form-row">
+              <label class="form-label-sm">Title *</label>
+              <input class="input-sm" id="gwTitle" placeholder="Giveaway title"/>
+            </div>
+            <div class="form-row">
+              <label class="form-label-sm">Prize Description *</label>
+              <input class="input-sm" id="gwPrize" placeholder="e.g. Premium Course Access, ₹500 Amazon Gift Card"/>
+            </div>
+            <div class="form-row-2">
+              <div>
+                <label class="form-label-sm">XP per Ticket</label>
+                <input class="input-sm" id="gwTicketCost" type="number" value="50"/>
+              </div>
+              <div>
+                <label class="form-label-sm">Duration (days)</label>
+                <input class="input-sm" id="gwDuration" type="number" value="7"/>
+              </div>
+            </div>
+            <div class="form-row">
+              <label class="form-label-sm">Required Badges (optional, comma-separated)</label>
+              <input class="input-sm" id="gwBadges" placeholder="pro,master (leave empty for all)"/>
+            </div>
+            <button class="btn-sm btn-primary-sm" style="margin-top:0.5rem;" onclick="createGiveaway()">🎁 Create Giveaway</button>
+          </div>
+          <div class="form-card">
+            <div class="form-card-title">🎁 Active Giveaways</div>
+            <div id="adminGiveawayList" style="color:var(--text2);font-size:0.85rem;">Loading...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- USERS -->
+      <div class="console-panel" id="panel-users">
+        <div class="form-card" style="margin-bottom:1.5rem;">
+          <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;">
+            <input class="input-sm" id="userSearch" placeholder="Search by name or UID..." style="flex:1;min-width:200px;" oninput="searchUsers()"/>
+            <button class="btn-sm btn-primary-sm" onclick="loadUsers()">🔍 Search</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>User</th><th>XP</th><th>Level</th><th>Streak</th><th>Joined</th><th>Status</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody">
+              <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text2);">Loading users...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- MESSAGES -->
+      <div class="console-panel" id="panel-messages">
+        <div class="form-card">
+          <div class="form-card-title">💬 User Messages to Admin</div>
+          <div id="adminMsgsList" style="color:var(--text2);font-size:0.85rem;">Loading...</div>
+        </div>
+      </div>
+
+      <!-- NOTIFICATIONS -->
+      <div class="console-panel" id="panel-notifications">
+        <div class="panel-grid">
+          <div class="form-card">
+            <div class="form-card-title">🔔 Send Notification to User</div>
+            <div class="form-row">
+              <label class="form-label-sm">User UID</label>
+              <input class="input-sm" id="notifUid" placeholder="Paste user UID"/>
+            </div>
+            <div class="form-row">
+              <label class="form-label-sm">Message</label>
+              <textarea class="input-sm" id="notifMsg" placeholder="Notification message..."></textarea>
+            </div>
+            <button class="btn-sm btn-primary-sm" onclick="sendNotification()">📨 Send</button>
+          </div>
+          <div class="form-card">
+            <div class="form-card-title">⚡ XP Management</div>
+            <div class="form-row">
+              <label class="form-label-sm">User UID</label>
+              <input class="input-sm" id="xpUid" placeholder="Paste user UID"/>
+            </div>
+            <div class="form-row-2">
+              <div>
+                <label class="form-label-sm">XP Amount</label>
+                <input class="input-sm" id="xpAmount" type="number" placeholder="100"/>
+              </div>
+              <div>
+                <label class="form-label-sm">Action</label>
+                <select class="input-sm" id="xpAction">
+                  <option value="grant">Grant XP</option>
+                  <option value="deduct">Deduct XP</option>
+                  <option value="set">Set XP</option>
+                </select>
+              </div>
+            </div>
+            <button class="btn-sm btn-primary-sm" onclick="manageXp()">⚡ Apply</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SITE CONTROLS -->
+      <div class="console-panel" id="panel-sitectl">
+        <div class="panel-grid">
+          <div class="form-card">
+            <div class="form-card-title">⚙️ Site Settings</div>
+            <div style="display:flex;flex-direction:column;gap:1rem;">
+              <div class="toggle-wrap">
+                <div class="toggle-info">
+                  <h4>🔧 Maintenance Mode</h4>
+                  <p>Displays a maintenance screen to all users</p>
+                </div>
+                <label class="toggle">
+                  <input type="checkbox" id="toggleMaintenance" onchange="setSiteSetting('maintenance',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div style="margin-top:1.5rem;">
+              <label class="form-label-sm" style="margin-bottom:0.5rem;">Marquee Text (separate sections with |)</label>
+              <textarea class="input-sm" id="marqueeText" placeholder="🎉 Announcement 1 | 📚 Announcement 2"></textarea>
+              <button class="btn-sm btn-primary-sm" style="margin-top:0.75rem;" onclick="updateMarquee()">💾 Update Marquee</button>
+            </div>
+          </div>
+          <div class="form-card">
+            <div class="form-card-title">📊 Telegram Campaign</div>
+            <div class="form-row">
+              <label class="form-label-sm">Target Members</label>
+              <input class="input-sm" id="tgTarget" type="number" placeholder="10000"/>
+            </div>
+            <div class="form-row">
+              <label class="form-label-sm">Current Members (manual input)</label>
+              <input class="input-sm" id="tgCurrent" type="number" placeholder="1234"/>
+            </div>
+            <button class="btn-sm btn-primary-sm" onclick="updateTgStats()">Update Stats</button>
+            <div id="tgStatsDisplay" style="margin-top:1rem;"></div>
+          </div>
+        </div>
+        <div class="form-card" style="margin-top:1.5rem;">
+          <div class="form-card-title">🚨 Danger Zone</div>
+          <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+            <button class="btn-sm btn-danger-sm" onclick="if(confirm('Export all user data?')) exportCSV()">📥 Export All Users</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECURITY -->
+      <div class="console-panel" id="panel-security">
+        <div class="form-card">
+          <div class="form-card-title">🛡️ Security Events</div>
+          <div id="securityLog" style="color:var(--text2);font-size:0.85rem;">Loading security log...</div>
+        </div>
+      </div>
+
+      <!-- ANALYTICS -->
+      <div class="console-panel" id="panel-analytics">
+        <div class="metrics-grid" id="analyticsMetrics">
+          <div class="metric-card"><div class="metric-label">Total XP Granted</div><div class="metric-value" id="aTotalXp">—</div></div>
+          <div class="metric-card"><div class="metric-label">Books in Library</div><div class="metric-value" id="aTotalBooks">—</div></div>
+          <div class="metric-card metric-success"><div class="metric-label">Total Unlocks</div><div class="metric-value" id="aTotalUnlocks">—</div></div>
+          <div class="metric-card"><div class="metric-label">Active Giveaways</div><div class="metric-value" id="aActiveGw">—</div></div>
+        </div>
+        <div class="form-card">
+          <div class="form-card-title">📅 Platform Overview</div>
+          <div id="analyticsDetails" style="color:var(--text2);font-size:0.85rem;line-height:1.8;">Loading analytics...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc,
+         collection, query, orderBy, limit, getDocs, addDoc,
+         increment, serverTimestamp, where, Timestamp
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBTsSHQDDZQxke_cDMaoalK7-Ffzy0YSeM",
+  authDomain: "learnx10-hub.firebaseapp.com",
+  projectId: "learnx10-hub",
+  storageBucket: "learnx10-hub.firebasestorage.app",
+  messagingSenderId: "127942677227",
+  appId: "1:127942677227:web:e8516a7d48d717d11564ae"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const ADMIN_EMAIL = "rakshitpal9690@gmail.com";
+let adminUser = null;
+let allUsers = [];
+
+// Auth state
+onAuthStateChanged(auth, (user) => {
+  if (user && user.email === ADMIN_EMAIL) {
+    adminUser = user;
+    document.getElementById('adminLogin').style.display = 'none';
+    document.getElementById('adminConsole').style.display = 'block';
+    loadDashboard();
+  }
+});
+
+window.adminLogin = async function() {
+  const email = document.getElementById('adminEmail').value.trim();
+  const password = document.getElementById('adminPassword').value;
+  const err = document.getElementById('loginError');
+
+  if (email !== ADMIN_EMAIL) { err.style.display='block'; err.textContent='Unauthorized email address.'; return; }
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch(e) {
+    err.style.display = 'block';
+    err.textContent = 'Invalid credentials. Access denied.';
+  }
+};
+
+window.adminSignOut = async function() {
+  await signOut(auth);
+  location.reload();
+};
+
+// ——— NAVIGATION ———
+window.showPanel = function(id, el) {
+  document.querySelectorAll('.console-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  if (el) el.classList.add('active');
+
+  const titles = {dashboard:'Dashboard',books:'Library Manager',giveaways:'Giveaways',users:'User Manager',messages:'Messages',notifications:'Notifications',sitectl:'Site Controls',security:'Security Log',analytics:'Analytics'};
+  document.getElementById('pageTitle').textContent = titles[id] || id;
+
+  if (id==='books') loadAdminBooks();
+  if (id==='users') loadUsers();
+  if (id==='messages') loadAdminMessages();
+  if (id==='giveaways') loadAdminGiveaways();
+  if (id==='security') loadSecurityLog();
+  if (id==='sitectl') loadSiteSettings();
+  if (id==='analytics') loadAnalytics();
+  closeSidebar();
+};
+
+// ——— DASHBOARD ———
+async function loadDashboard() {
+  try {
+    const [usersSnap, booksSnap, gwSnap, statsSnap] = await Promise.all([
+      getDocs(collection(db,'users')),
+      getDocs(collection(db,'books')),
+      getDocs(query(collection(db,'giveaways'),where('active','==',true))),
+      getDoc(doc(db,'config','stats')),
+    ]);
+
+    let totalXp = 0;
+    usersSnap.forEach(d => { totalXp += (d.data().xp||0); });
+
+    document.getElementById('mTotalUsers').textContent = usersSnap.size;
+    document.getElementById('mTotalXp').textContent = totalXp.toLocaleString();
+    document.getElementById('mGiveaways').textContent = gwSnap.size;
+
+    if (statsSnap.exists()) {
+      document.getElementById('mUnlocks').textContent = (statsSnap.data().totalUnlocks||0).toLocaleString();
+      document.getElementById('mHackers').textContent = (statsSnap.data().hackerAttempts||0).toLocaleString();
+    }
+
+    document.getElementById('mTelegram').textContent = '1,234';
+    document.getElementById('mTelegramSub').textContent = 'Target: 10,000';
+
+    // Recent users
+    const recentSnap = await getDocs(query(collection(db,'users'), orderBy('joinedAt','desc'), limit(5)));
+    let recentHtml = '';
+    recentSnap.forEach(d => {
+      const u = d.data();
+      recentHtml += `<div style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0;border-bottom:1px solid var(--border);">
+        <div>
+          <div style="font-size:0.88rem;font-weight:600;color:var(--text);">${u.displayName||'Learner'}</div>
+          <div style="font-size:0.75rem;color:var(--text2);">${u.joinedAt?.toDate?.()?.toLocaleDateString?.()}</div>
+        </div>
+        <span class="pill pill-blue">⚡${u.xp||0} XP</span>
+      </div>`;
+    });
+    document.getElementById('recentUsers').innerHTML = recentHtml || '<div style="text-align:center;padding:1rem;">No users yet</div>';
+
+    // Pending messages
+    const msgSnap = await getDocs(query(collection(db,'adminMessages'), where('read','==',false), limit(5)));
+    let msgHtml = '';
+    msgSnap.forEach(d => {
+      const m = d.data();
+      msgHtml += `<div style="padding:0.6rem 0;border-bottom:1px solid var(--border);">
+        <div style="font-size:0.82rem;font-weight:600;color:var(--text2);">${m.userName}</div>
+        <div style="font-size:0.85rem;color:var(--text);margin-top:0.2rem;">${m.message?.substring(0,80)||''}${m.message?.length>80?'...':''}</div>
+      </div>`;
+    });
+    document.getElementById('pendingMessages').innerHTML = msgHtml || '<div style="text-align:center;padding:1rem;">No pending messages</div>';
+
+    // Update stats doc
+    await setDoc(doc(db,'config','stats'), { totalUsers: usersSnap.size, totalXp }, { merge: true });
+
+  } catch(e) { console.error(e); }
+}
+
+// ——— BOOKS ———
+async function loadAdminBooks() {
+  const list = document.getElementById('adminBookList');
+  list.innerHTML = '<div style="text-align:center;padding:1rem;">Loading...</div>';
+  try {
+    const snap = await getDocs(collection(db,'books'));
+    document.getElementById('bookCount').textContent = `${snap.size} books`;
+    let html = '';
+    snap.forEach(d => {
+      const b = d.data();
+      html += `<div style="display:flex;align-items:center;justify-content:space-between;padding:0.75rem 0;border-bottom:1px solid var(--border);gap:0.5rem;">
+        <div style="flex:1;">
+          <div style="font-size:0.88rem;font-weight:600;color:var(--text);">${b.emoji||'📖'} ${b.title||'Untitled'}</div>
+          <div style="font-size:0.75rem;color:var(--text2);">${b.author||'—'} · ${b.category||'—'} · ${b.xpCost||100} XP</div>
+        </div>
+        <button class="btn-sm btn-danger-sm" onclick="deleteBook('${d.id}')">🗑</button>
+      </div>`;
+    });
+    list.innerHTML = html || '<div style="text-align:center;padding:1rem;color:var(--text2);">No books yet</div>';
+  } catch(e) { list.innerHTML = 'Error loading books'; }
+}
+
+window.addBook = async function() {
+  const title = document.getElementById('bookTitle').value.trim();
+  const url = document.getElementById('bookUrl').value.trim();
+  if (!title) { showToast('Book title is required', true); return; }
+  if (!url) { showToast('Destination URL is required', true); return; }
+  try {
+    await addDoc(collection(db,'books'), {
+      title, author: document.getElementById('bookAuthor').value.trim(),
+      description: document.getElementById('bookDesc').value.trim(),
+      category: document.getElementById('bookCat').value,
+      xpCost: parseInt(document.getElementById('bookXp').value)||100,
+      emoji: document.getElementById('bookEmoji').value.trim() || '📖',
+      shortLink: url, url,
+      createdAt: serverTimestamp(),
+    });
+    showToast('✅ Book added successfully!');
+    ['bookTitle','bookAuthor','bookDesc','bookUrl'].forEach(id => document.getElementById(id).value='');
+    loadAdminBooks();
+  } catch(e) { showToast('Failed: '+e.message, true); }
+};
+
+window.deleteBook = async function(id) {
+  if (!confirm('Delete this book? Users who have unlocked it will lose access.')) return;
+  try {
+    await deleteDoc(doc(db,'books',id));
+    showToast('Book deleted');
+    loadAdminBooks();
+  } catch(e) { showToast('Failed: '+e.message, true); }
+};
+
+window.openJsonImport = function() {
+  document.getElementById('jsonImportCard').style.display = 'block';
+};
+
+window.importJson = async function() {
+  const raw = document.getElementById('jsonImportData').value.trim();
+  try {
+    const books = JSON.parse(raw);
+    if (!Array.isArray(books)) throw new Error('Expected JSON array');
+    let count = 0;
+    for (const b of books) {
+      if (!b.title) continue;
+      await addDoc(collection(db,'books'), {
+        title: b.title, author: b.author||'',
+        description: b.description||'', category: b.category||'General',
+        xpCost: b.xpCost||100, emoji: b.emoji||'📖',
+        shortLink: b.shortLink||b.url||'', url: b.shortLink||b.url||'',
+        createdAt: serverTimestamp(),
+      });
+      count++;
+    }
+    showToast(`✅ Imported ${count} books!`);
+    document.getElementById('jsonImportCard').style.display = 'none';
+    loadAdminBooks();
+  } catch(e) { showToast('JSON parse error: '+e.message, true); }
+};
+
+// ——— GIVEAWAYS ———
+window.createGiveaway = async function() {
+  const title = document.getElementById('gwTitle').value.trim();
+  const prize = document.getElementById('gwPrize').value.trim();
+  if (!title || !prize) { showToast('Title and prize are required', true); return; }
+  const days = parseInt(document.getElementById('gwDuration').value)||7;
+  const badgesRaw = document.getElementById('gwBadges').value.trim();
+  const requiredBadges = badgesRaw ? badgesRaw.split(',').map(s=>s.trim()).filter(Boolean) : [];
+  try {
+    await addDoc(collection(db,'giveaways'), {
+      title, prize,
+      ticketCost: parseInt(document.getElementById('gwTicketCost').value)||50,
+      requiredBadges, active: true,
+      participants: {}, totalTickets: 0,
+      createdAt: serverTimestamp(),
+      expiresAt: Timestamp.fromMillis(Date.now() + days*86400000),
+    });
+    showToast('🎁 Giveaway created!');
+    ['gwTitle','gwPrize','gwBadges'].forEach(id=>document.getElementById(id).value='');
+    loadAdminGiveaways();
+  } catch(e) { showToast('Failed: '+e.message, true); }
+};
+
+async function loadAdminGiveaways() {
+  const list = document.getElementById('adminGiveawayList');
+  list.innerHTML = 'Loading...';
+  try {
+    const snap = await getDocs(query(collection(db,'giveaways'), orderBy('createdAt','desc')));
+    let html = '';
+    snap.forEach(d => {
+      const g = d.data();
+      const participants = Object.keys(g.participants||{}).length;
+      html += `<div style="padding:0.75rem 0;border-bottom:1px solid var(--border);">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.5rem;">
+          <div>
+            <div style="font-size:0.88rem;font-weight:600;color:var(--text);">${g.title}</div>
+            <div style="font-size:0.75rem;color:var(--text2);">Prize: ${g.prize} · ${participants} entrants · ${g.totalTickets||0} tickets</div>
+          </div>
+          <div style="display:flex;gap:0.5rem;flex-shrink:0;">
+            <span class="pill ${g.active?'pill-green':'pill-red'}">${g.active?'Active':'Ended'}</span>
+            <button class="btn-sm btn-danger-sm" onclick="endGiveaway('${d.id}')">End</button>
+          </div>
+        </div>
+      </div>`;
+    });
+    list.innerHTML = html || '<div style="padding:1rem;color:var(--text2);">No giveaways yet</div>';
+  } catch(e) { list.innerHTML = 'Error'; }
+}
+
+window.endGiveaway = async function(id) {
+  if (!confirm('End this giveaway?')) return;
+  await updateDoc(doc(db,'giveaways',id), { active: false });
+  showToast('Giveaway ended');
+  loadAdminGiveaways();
+};
+
+// ——— USERS ———
+window.loadUsers = async function() {
+  const body = document.getElementById('usersTableBody');
+  body.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text2);">Loading...</td></tr>';
+  try {
+    const snap = await getDocs(query(collection(db,'users'), orderBy('xp','desc'), limit(100)));
+    allUsers = [];
+    snap.forEach(d => allUsers.push({id:d.id,...d.data()}));
+    renderUsersTable(allUsers);
+  } catch(e) { body.innerHTML = '<tr><td colspan="7" style="color:var(--accent3)">Failed to load</td></tr>'; }
+};
+
+function renderUsersTable(users) {
+  const body = document.getElementById('usersTableBody');
+  if (!users.length) { body.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text2);">No users found</td></tr>'; return; }
+  const LEVELS = [{level:0,xpRequired:0,title:"Newcomer"},{level:1,xpRequired:200,title:"Explorer"},{level:2,xpRequired:500,title:"Learner"},{level:3,xpRequired:1000,title:"Scholar"},{level:4,xpRequired:2000,title:"Sage"},{level:5,xpRequired:3500,title:"Master"},{level:6,xpRequired:5500,title:"Grandmaster"},{level:7,xpRequired:8000,title:"Legend"}];
+  function getLevel(xp){let c=LEVELS[0];for(const l of LEVELS){if(xp>=l.xpRequired)c=l;else break;}return c;}
+  body.innerHTML = users.filter(u=>!u.isAdmin).map(u => {
+    const lvl = getLevel(u.xp||0);
+    const banned = u.banned;
+    return `<tr>
+      <td><div style="font-weight:600;font-size:0.88rem;">${u.displayName||'Learner'}</div><div style="font-size:0.72rem;color:var(--text2);font-family:'JetBrains Mono',monospace;">${u.id.slice(0,12)}...</div></td>
+      <td><span class="pill pill-purple">⚡${(u.xp||0).toLocaleString()}</span></td>
+      <td><span class="pill pill-blue">L${lvl.level} ${lvl.title}</span></td>
+      <td>${u.streak||0}🔥</td>
+      <td style="font-size:0.78rem;color:var(--text2);">${u.joinedAt?.toDate?.()?.toLocaleDateString?.()||'—'}</td>
+      <td><span class="pill ${banned?'pill-red':'pill-green'}">${banned?'Banned':'Active'}</span></td>
+      <td>
+        <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+          <button class="btn-sm btn-warning-sm" onclick="quickXp('${u.id}')">⚡XP</button>
+          <button class="btn-sm btn-primary-sm" style="font-size:0.75rem;" onclick="quickNotif('${u.id}')">🔔</button>
+          <button class="btn-sm ${banned?'btn-success-sm':'btn-danger-sm'}" onclick="toggleBan('${u.id}',${!banned})">${banned?'Unban':'Ban'}</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+window.searchUsers = function() {
+  const q = document.getElementById('userSearch').value.toLowerCase();
+  renderUsersTable(allUsers.filter(u =>
+    (u.displayName||'').toLowerCase().includes(q) || u.id.toLowerCase().includes(q)
+  ));
+};
+
+window.toggleBan = async function(uid, ban) {
+  if (!confirm(`${ban?'Ban':'Unban'} this user?`)) return;
+  await updateDoc(doc(db,'users',uid), { banned: ban });
+  showToast(ban ? '🚫 User banned' : '✅ User unbanned');
+  loadUsers();
+};
+
+window.quickXp = function(uid) {
+  document.getElementById('xpUid').value = uid;
+  showPanel('notifications', document.querySelector('.nav-item:nth-child(3)'));
+};
+window.quickNotif = function(uid) {
+  document.getElementById('notifUid').value = uid;
+  showPanel('notifications', null);
+};
+
+// ——— MESSAGES ———
+async function loadAdminMessages() {
+  const list = document.getElementById('adminMsgsList');
+  list.innerHTML = 'Loading...';
+  try {
+    const snap = await getDocs(query(collection(db,'adminMessages'), orderBy('createdAt','desc'), limit(50)));
+    let html = '';
+    snap.forEach(d => {
+      const m = d.data();
+      html += `<div style="padding:1rem;border-bottom:1px solid var(--border);display:flex;gap:1rem;align-items:flex-start;">
+        <div style="flex:1;">
+          <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;margin-bottom:0.4rem;">
+            <span style="font-weight:600;font-size:0.88rem;">${m.userName||'User'}</span>
+            <span style="font-size:0.72rem;color:var(--text2);">${m.createdAt?.toDate?.()?.toLocaleString?.()||''}</span>
+            ${m.pinned?'<span class="pill pill-yellow">📌 Pinned</span>':''}
+            ${!m.read?'<span class="pill pill-blue">New</span>':''}
+          </div>
+          <div style="font-size:0.88rem;color:var(--text2);">${m.message||''}</div>
+        </div>
+        <div style="display:flex;gap:0.4rem;flex-shrink:0;">
+          <button class="btn-sm ${m.pinned?'btn-warning-sm':'btn-success-sm'}" onclick="togglePin('${d.id}',${!m.pinned})">${m.pinned?'Unpin':'📌 Pin'}</button>
+          <button class="btn-sm btn-danger-sm" onclick="deleteMsg('${d.id}')">🗑</button>
+        </div>
+      </div>`;
+    });
+    list.innerHTML = html || '<div style="padding:2rem;text-align:center;color:var(--text2);">No messages</div>';
+  } catch(e) { list.innerHTML = 'Error'; }
+}
+
+window.togglePin = async function(id, pin) {
+  await updateDoc(doc(db,'adminMessages',id), { pinned: pin, read: true });
+  showToast(pin?'📌 Message pinned to marquee!':'Message unpinned');
+  loadAdminMessages();
+};
+window.deleteMsg = async function(id) {
+  if (!confirm('Delete message?')) return;
+  await deleteDoc(doc(db,'adminMessages',id));
+  loadAdminMessages();
+};
+
+// ——— NOTIFICATIONS & XP ———
+window.sendNotification = async function() {
+  const uid = document.getElementById('notifUid').value.trim();
+  const msg = document.getElementById('notifMsg').value.trim();
+  if (!uid || !msg) { showToast('UID and message required', true); return; }
+  try {
+    await addDoc(collection(db,'users',uid,'notifications'), {
+      message: msg, read: false, createdAt: serverTimestamp(), fromAdmin: true,
+    });
+    showToast('✅ Notification sent!');
+    document.getElementById('notifMsg').value = '';
+  } catch(e) { showToast('Failed: '+e.message, true); }
+};
+
+window.manageXp = async function() {
+  const uid = document.getElementById('xpUid').value.trim();
+  const amount = parseInt(document.getElementById('xpAmount').value)||0;
+  const action = document.getElementById('xpAction').value;
+  if (!uid || !amount) { showToast('UID and amount required', true); return; }
+  try {
+    const updates = {};
+    if (action==='grant') updates.xp = increment(amount);
+    else if (action==='deduct') updates.xp = increment(-amount);
+    else if (action==='set') updates.xp = amount;
+    await updateDoc(doc(db,'users',uid), updates);
+
+    // Notify user
+    await addDoc(collection(db,'users',uid,'notifications'), {
+      message: `Admin ${action==='grant'?'granted':'adjusted'} ${amount} XP to your account.`,
+      read: false, createdAt: serverTimestamp(), fromAdmin: true,
+    });
+    showToast(`✅ XP ${action}ed: ${amount}`);
+  } catch(e) { showToast('Failed: '+e.message, true); }
+};
+
+// ——— SITE CONTROLS ———
+async function loadSiteSettings() {
+  try {
+    const snap = await getDoc(doc(db,'config','site'));
+    if (snap.exists()) {
+      document.getElementById('toggleMaintenance').checked = !!snap.data().maintenance;
+      document.getElementById('marqueeText').value = snap.data().marquee || '';
+    }
+  } catch(e) {}
+}
+
+window.setSiteSetting = async function(key, value) {
+  await setDoc(doc(db,'config','site'), { [key]: value }, { merge: true });
+  showToast(`✅ ${key} set to ${value}`);
+};
+
+window.updateMarquee = async function() {
+  const text = document.getElementById('marqueeText').value.trim();
+  await setDoc(doc(db,'config','site'), { marquee: text }, { merge: true });
+  showToast('✅ Marquee updated!');
+};
+
+window.updateTgStats = async function() {
+  const target = parseInt(document.getElementById('tgTarget').value)||10000;
+  const current = parseInt(document.getElementById('tgCurrent').value)||0;
+  await setDoc(doc(db,'config','telegram'), { target, current }, { merge: true });
+  const pct = ((current/target)*100).toFixed(1);
+  document.getElementById('tgStatsDisplay').innerHTML = `
+    <div style="margin-top:0.5rem;">
+      <div style="display:flex;justify-content:space-between;font-size:0.82rem;color:var(--text2);margin-bottom:0.5rem;">
+        <span>${current.toLocaleString()} members</span><span>${pct}% of goal</span>
+      </div>
+      <div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden;">
+        <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#0088ff,#7c3aff);border-radius:4px;"></div>
+      </div>
+      <div style="font-size:0.78rem;color:var(--text2);margin-top:0.4rem;">Target: ${target.toLocaleString()}</div>
+    </div>
+  `;
+  showToast('Stats updated');
+};
+
+// ——— SECURITY LOG ———
+async function loadSecurityLog() {
+  const log = document.getElementById('securityLog');
+  log.innerHTML = 'Loading...';
+  try {
+    const snap = await getDocs(query(collection(db,'securityLog'), orderBy('timestamp','desc'), limit(50)));
+    if (snap.empty) {
+      log.innerHTML = '<div style="text-align:center;padding:2rem;">No security events logged</div>';
+      return;
+    }
+    let html = '<div class="table-wrap"><table class="data-table"><thead><tr><th>Time</th><th>Event</th><th>User/IP</th><th>Action</th></tr></thead><tbody>';
+    snap.forEach(d => {
+      const e = d.data();
+      html += `<tr>
+        <td style="font-size:0.78rem;font-family:'JetBrains Mono',monospace;">${e.timestamp?.toDate?.()?.toLocaleString?.()||'—'}</td>
+        <td><span class="pill pill-red">${e.type||'Unknown'}</span></td>
+        <td style="font-size:0.78rem;">${e.uid||e.ip||'—'}</td>
+        <td style="font-size:0.78rem;color:var(--text2);">${e.details||'—'}</td>
+      </tr>`;
+    });
+    html += '</tbody></table></div>';
+    log.innerHTML = html;
+  } catch(e) { log.innerHTML = 'Error loading security log'; }
+}
+
+// ——— ANALYTICS ———
+async function loadAnalytics() {
+  try {
+    const [usersSnap, booksSnap, gwSnap, statsSnap] = await Promise.all([
+      getDocs(collection(db,'users')),
+      getDocs(collection(db,'books')),
+      getDocs(query(collection(db,'giveaways'),where('active','==',true))),
+      getDoc(doc(db,'config','stats')),
+    ]);
+    let totalXp=0, totalUnlocks=0;
+    usersSnap.forEach(d=>{totalXp+=(d.data().xp||0); totalUnlocks+=(d.data().unlockedBooks||[]).length;});
+    document.getElementById('aTotalXp').textContent = totalXp.toLocaleString();
+    document.getElementById('aTotalBooks').textContent = booksSnap.size;
+    document.getElementById('aTotalUnlocks').textContent = totalUnlocks;
+    document.getElementById('aActiveGw').textContent = gwSnap.size;
+    document.getElementById('analyticsDetails').innerHTML = `
+      Total registered users: ${usersSnap.size}<br>
+      Total XP in economy: ${totalXp.toLocaleString()}<br>
+      Total book unlocks: ${totalUnlocks}<br>
+      Books in library: ${booksSnap.size}<br>
+      Active giveaways: ${gwSnap.size}<br>
+      Avg XP per user: ${usersSnap.size ? Math.round(totalXp/usersSnap.size).toLocaleString() : 0}
+    `;
+  } catch(e) {}
+}
+
+// ——— CSV EXPORT ———
+window.exportCSV = async function() {
+  const snap = await getDocs(collection(db,'users'));
+  let csv = 'UID,Name,Email,XP,Level,Streak,Banned,Joined\n';
+  snap.forEach(d => {
+    const u = d.data();
+    csv += `"${d.id}","${u.displayName||''}","${u.email||''}","${u.xp||0}","${u.level||0}","${u.streak||0}","${u.banned||false}","${u.joinedAt?.toDate?.()?.toLocaleDateString?.()||''}"\n`;
+  });
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = `learnx10_users_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  showToast('📥 CSV exported!');
+};
+
+window.refreshData = function() { loadDashboard(); showToast('Data refreshed'); };
+
+// ——— SIDEBAR ———
+window.openSidebar = function() {
+  document.getElementById('adminSidebar').classList.add('open');
+  document.getElementById('overlayBg').classList.add('show');
+};
+window.closeSidebar = function() {
+  document.getElementById('adminSidebar').classList.remove('open');
+  document.getElementById('overlayBg').classList.remove('show');
+};
+
+function showToast(msg, isErr=false) {
+  const t = document.createElement('div');
+  t.style.cssText = `position:fixed;bottom:1.5rem;right:1.5rem;
+    background:${isErr?'rgba(239,68,68,0.9)':'rgba(34,197,94,0.9)'};
+    color:#fff;padding:0.75rem 1.25rem;border-radius:10px;font-size:0.88rem;
+    z-index:9999;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,0.4);
+    transform:translateY(20px);opacity:0;transition:all 0.3s;`;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{t.style.opacity='1';t.style.transform='translateY(0)';}));
+  setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),300);},3500);
+}
+</script>
+</body>
+</html>
