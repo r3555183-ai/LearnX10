@@ -1,0 +1,2032 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LearnX10 — Learn. Earn. Unlock.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #000008;
+  --bg2: #0a0a1a;
+  --surface: rgba(255,255,255,0.04);
+  --surface2: rgba(255,255,255,0.07);
+  --border: rgba(255,255,255,0.08);
+  --text: #f0f0ff;
+  --text2: #8888aa;
+  --accent: #7c3aff;
+  --accent2: #00d4ff;
+  --accent3: #ff3aaa;
+  --neon: 0 0 20px rgba(124,58,255,0.6);
+  --neon2: 0 0 20px rgba(0,212,255,0.5);
+  --radius: 16px;
+  --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+[data-theme="light"] {
+  --bg: #f5f5fa;
+  --bg2: #ffffff;
+  --surface: rgba(255,255,255,0.8);
+  --surface2: rgba(255,255,255,0.95);
+  --border: rgba(0,0,0,0.08);
+  --text: #0a0a1a;
+  --text2: #666680;
+  --accent: #5b21b6;
+  --accent2: #0284c7;
+  --accent3: #be185d;
+  --neon: 0 4px 20px rgba(91,33,182,0.2);
+  --neon2: 0 4px 20px rgba(2,132,199,0.2);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+  transition:background var(--transition),color var(--transition);
+}
+
+/* LOADER */
+#loader{
+  position:fixed;inset:0;z-index:9999;
+  background:var(--bg);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  transition:opacity 0.6s ease,transform 0.6s ease;
+}
+#loader.hide{opacity:0;pointer-events:none;transform:scale(1.05);}
+.loader-logo{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(2.5rem,8vw,5rem);
+  font-weight:800;
+  letter-spacing:-2px;
+  background:linear-gradient(135deg,#7c3aff,#00d4ff,#ff3aaa);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  animation:float3d 2s ease-in-out infinite alternate, pulse 1s ease-in-out infinite;
+  transform-style:preserve-3d;
+  filter:drop-shadow(0 0 30px rgba(124,58,255,0.8));
+}
+@keyframes float3d{
+  0%{transform:perspective(400px) rotateX(5deg) translateY(0);}
+  100%{transform:perspective(400px) rotateX(-5deg) translateY(-12px);}
+}
+@keyframes pulse{
+  0%,100%{filter:drop-shadow(0 0 30px rgba(124,58,255,0.8));}
+  50%{filter:drop-shadow(0 0 50px rgba(0,212,255,0.9));}
+}
+.loader-sub{
+  margin-top:1rem;color:var(--text2);
+  font-family:'JetBrains Mono',monospace;font-size:0.8rem;
+  letter-spacing:3px;text-transform:uppercase;
+  animation:fadeUp 0.8s 0.5s both;
+}
+.loader-bar{
+  width:200px;height:2px;background:var(--border);
+  border-radius:2px;margin-top:2rem;overflow:hidden;
+}
+.loader-bar-fill{
+  height:100%;background:linear-gradient(90deg,#7c3aff,#00d4ff);
+  border-radius:2px;animation:load 1.8s ease forwards;
+}
+@keyframes load{0%{width:0;}100%{width:100%;}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:none;}}
+
+/* PARTICLES */
+#particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.particle{
+  position:absolute;border-radius:50%;
+  animation:drift linear infinite;
+  opacity:0;
+}
+@keyframes drift{
+  0%{opacity:0;transform:translateY(100vh) scale(0);}
+  10%{opacity:1;}
+  90%{opacity:0.5;}
+  100%{opacity:0;transform:translateY(-20px) scale(1.2);}
+}
+.orb{
+  position:fixed;border-radius:50%;filter:blur(80px);
+  pointer-events:none;z-index:0;animation:orbFloat 8s ease-in-out infinite alternate;
+}
+.orb1{width:400px;height:400px;background:rgba(124,58,255,0.15);top:-100px;right:-100px;}
+.orb2{width:300px;height:300px;background:rgba(0,212,255,0.1);bottom:50px;left:-50px;animation-delay:-4s;}
+.orb3{width:200px;height:200px;background:rgba(255,58,170,0.08);top:50%;left:50%;animation-delay:-2s;}
+@keyframes orbFloat{
+  0%{transform:translate(0,0) scale(1);}
+  100%{transform:translate(30px,40px) scale(1.1);}
+}
+
+/* NAV */
+nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(0,0,8,0.7);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:0 1.5rem;
+  display:flex;align-items:center;
+  height:64px;gap:1rem;
+  transition:background var(--transition);
+}
+[data-theme="light"] nav{background:rgba(245,245,250,0.85);}
+.nav-logo{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;
+  letter-spacing:-0.5px;
+  background:linear-gradient(135deg,#7c3aff,#00d4ff);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  text-decoration:none;flex-shrink:0;
+}
+.nav-tabs{
+  display:flex;gap:0.25rem;flex:1;overflow-x:auto;
+  scrollbar-width:none;
+}
+.nav-tabs::-webkit-scrollbar{display:none;}
+.tab-btn{
+  padding:0.5rem 1rem;border-radius:10px;border:none;
+  background:transparent;color:var(--text2);
+  font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;
+  cursor:pointer;transition:all var(--transition);white-space:nowrap;
+  flex-shrink:0;
+}
+.tab-btn:hover{color:var(--text);background:var(--surface);}
+.tab-btn.active{
+  color:var(--accent2);background:var(--surface);
+  box-shadow:var(--neon2);
+}
+.nav-actions{display:flex;align-items:center;gap:0.75rem;flex-shrink:0;}
+.icon-btn{
+  width:40px;height:40px;border-radius:10px;border:1px solid var(--border);
+  background:var(--surface);color:var(--text);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all var(--transition);font-size:1.1rem;
+  position:relative;
+}
+.icon-btn:hover{border-color:var(--accent);box-shadow:var(--neon);}
+.notif-badge{
+  position:absolute;top:-4px;right:-4px;
+  width:18px;height:18px;border-radius:50%;
+  background:var(--accent3);color:#fff;
+  font-size:0.65rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  display:none;
+}
+.xp-chip{
+  padding:0.4rem 0.9rem;border-radius:20px;
+  background:linear-gradient(135deg,rgba(124,58,255,0.2),rgba(0,212,255,0.1));
+  border:1px solid rgba(124,58,255,0.3);
+  font-family:'JetBrains Mono',monospace;font-size:0.8rem;font-weight:600;
+  color:var(--accent2);cursor:pointer;transition:all var(--transition);
+  white-space:nowrap;
+}
+.xp-chip:hover{border-color:var(--accent2);box-shadow:var(--neon2);}
+.login-btn{
+  padding:0.5rem 1.2rem;border-radius:10px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;border:none;font-family:'DM Sans',sans-serif;
+  font-size:0.9rem;font-weight:600;cursor:pointer;
+  transition:all var(--transition);white-space:nowrap;
+}
+.login-btn:hover{transform:translateY(-1px);box-shadow:var(--neon);}
+
+/* MARQUEE */
+.marquee-wrap{
+  background:linear-gradient(90deg,rgba(124,58,255,0.1),rgba(0,212,255,0.1),rgba(255,58,170,0.1));
+  border-bottom:1px solid var(--border);
+  padding:0.5rem 0;overflow:hidden;
+}
+.marquee-track{
+  display:flex;gap:3rem;white-space:nowrap;
+  animation:marquee 30s linear infinite;
+}
+.marquee-track:hover{animation-play-state:paused;}
+@keyframes marquee{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+.marquee-item{
+  font-size:0.82rem;color:var(--text2);font-family:'JetBrains Mono',monospace;
+}
+.marquee-item span{color:var(--accent2);}
+
+/* TABS CONTENT */
+.tab-panel{display:none;padding:2rem 1.5rem;max-width:1200px;margin:0 auto;position:relative;z-index:1;}
+.tab-panel.active{display:block;animation:fadeIn 0.4s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+/* HOME TAB */
+.hero{
+  text-align:center;padding:4rem 1rem 3rem;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  padding:0.4rem 1rem;border-radius:20px;
+  border:1px solid rgba(124,58,255,0.3);
+  background:rgba(124,58,255,0.08);
+  font-size:0.8rem;color:var(--accent);font-weight:600;
+  margin-bottom:1.5rem;letter-spacing:1px;text-transform:uppercase;
+}
+.hero h1{
+  font-family:'Syne',sans-serif;font-size:clamp(2.5rem,7vw,5rem);
+  font-weight:800;letter-spacing:-2px;line-height:1;
+  margin-bottom:1.5rem;
+}
+.hero h1 .grad{
+  background:linear-gradient(135deg,#7c3aff 0%,#00d4ff 50%,#ff3aaa 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.hero p{color:var(--text2);font-size:1.1rem;max-width:500px;margin:0 auto 2.5rem;line-height:1.7;}
+.hero-cta{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;}
+.btn-primary{
+  padding:0.85rem 2rem;border-radius:12px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;border:none;font-family:'Syne',sans-serif;
+  font-size:1rem;font-weight:700;cursor:pointer;
+  transition:all var(--transition);letter-spacing:0.3px;
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(124,58,255,0.4);}
+.btn-secondary{
+  padding:0.85rem 2rem;border-radius:12px;
+  background:transparent;color:var(--text);
+  border:1px solid var(--border);
+  font-family:'Syne',sans-serif;font-size:1rem;font-weight:600;
+  cursor:pointer;transition:all var(--transition);
+}
+.btn-secondary:hover{border-color:var(--accent);background:var(--surface);}
+
+.stats-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:1rem;margin:3rem 0;
+}
+.stat-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:1.5rem;
+  text-align:center;transition:all var(--transition);
+  backdrop-filter:blur(10px);
+}
+.stat-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:var(--neon);}
+.stat-num{
+  font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:800;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.stat-label{font-size:0.85rem;color:var(--text2);margin-top:0.3rem;}
+
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;margin:2rem 0;}
+.feature-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:2rem;
+  transition:all var(--transition);backdrop-filter:blur(10px);
+}
+.feature-card:hover{border-color:var(--accent2);box-shadow:var(--neon2);}
+.feature-icon{font-size:2rem;margin-bottom:1rem;}
+.feature-card h3{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:0.5rem;}
+.feature-card p{font-size:0.9rem;color:var(--text2);line-height:1.6;}
+
+/* PROFILE SECTION */
+.profile-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:2rem;
+  backdrop-filter:blur(10px);max-width:600px;margin:0 auto;
+}
+.profile-top{display:flex;align-items:center;gap:1.5rem;margin-bottom:2rem;}
+.avatar-wrap{
+  width:80px;height:80px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:2rem;flex-shrink:0;position:relative;
+  box-shadow:var(--neon);
+}
+.level-ring{
+  position:absolute;inset:-3px;border-radius:50%;
+  background:conic-gradient(var(--accent2) var(--progress,0%),transparent 0);
+  z-index:-1;
+}
+.profile-name{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;}
+.profile-level{color:var(--accent2);font-size:0.85rem;font-weight:600;margin-top:0.2rem;}
+.profile-joined{color:var(--text2);font-size:0.8rem;margin-top:0.2rem;}
+.xp-bar-wrap{margin-bottom:1.5rem;}
+.xp-bar-labels{display:flex;justify-content:space-between;font-size:0.8rem;color:var(--text2);margin-bottom:0.5rem;}
+.xp-bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden;}
+.xp-bar-fill{
+  height:100%;border-radius:4px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+  transition:width 1s ease;
+}
+.badges-grid{display:flex;flex-wrap:wrap;gap:0.75rem;}
+.badge-item{
+  display:flex;align-items:center;gap:0.4rem;
+  padding:0.4rem 0.8rem;border-radius:20px;
+  font-size:0.8rem;font-weight:600;
+  transition:all var(--transition);
+}
+.badge-item.earned{
+  background:linear-gradient(135deg,rgba(124,58,255,0.2),rgba(0,212,255,0.1));
+  border:1px solid rgba(124,58,255,0.3);color:var(--text);
+}
+.badge-item.locked{
+  background:var(--surface2);border:1px solid var(--border);
+  color:var(--text2);filter:grayscale(1);opacity:0.5;
+}
+
+/* LIBRARY */
+.section-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:2rem;flex-wrap:wrap;gap:1rem;
+}
+.section-title{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;}
+.search-bar{
+  display:flex;gap:0.75rem;flex-wrap:wrap;
+}
+.search-input{
+  padding:0.6rem 1rem;border-radius:10px;
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;
+  outline:none;width:220px;transition:all var(--transition);
+}
+.search-input:focus{border-color:var(--accent);box-shadow:var(--neon);}
+.search-input::placeholder{color:var(--text2);}
+.filter-select{
+  padding:0.6rem 1rem;border-radius:10px;
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;
+  outline:none;cursor:pointer;
+}
+.books-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+  gap:1.25rem;
+}
+.book-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
+  cursor:pointer;transition:all var(--transition);
+  position:relative;
+}
+.book-card:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:var(--neon);}
+.book-cover{
+  height:200px;display:flex;align-items:center;justify-content:center;
+  font-size:4rem;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,rgba(124,58,255,0.15),rgba(0,212,255,0.1));
+}
+.book-lock{
+  position:absolute;top:8px;right:8px;
+  background:rgba(0,0,0,0.7);border-radius:6px;
+  padding:0.2rem 0.4rem;font-size:0.7rem;
+  display:flex;align-items:center;gap:0.3rem;
+  border:1px solid rgba(255,255,255,0.1);
+}
+.book-lock.unlocked{border-color:rgba(0,212,255,0.4);color:var(--accent2);}
+.book-info{padding:1rem;}
+.book-title{
+  font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:700;
+  margin-bottom:0.3rem;line-height:1.3;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.book-author{font-size:0.78rem;color:var(--text2);}
+.book-xp{
+  display:inline-flex;align-items:center;gap:0.3rem;
+  margin-top:0.5rem;font-size:0.75rem;font-weight:600;
+  color:var(--accent);font-family:'JetBrains Mono',monospace;
+}
+
+/* GIVEAWAY */
+.giveaway-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem;}
+.giveaway-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:2rem;
+  transition:all var(--transition);backdrop-filter:blur(10px);
+  position:relative;overflow:hidden;
+}
+.giveaway-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(124,58,255,0.08),rgba(0,212,255,0.05));
+  pointer-events:none;
+}
+.giveaway-card:hover{border-color:var(--accent3);box-shadow:0 0 20px rgba(255,58,170,0.2);}
+.giveaway-prize{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:0.5rem;}
+.giveaway-meta{font-size:0.85rem;color:var(--text2);margin-bottom:1.5rem;}
+.ticket-row{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
+.ticket-count{
+  font-family:'JetBrains Mono',monospace;font-size:0.85rem;
+  color:var(--accent2);padding:0.4rem 0.8rem;
+  background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.2);
+  border-radius:8px;
+}
+.countdown-timer{
+  font-family:'JetBrains Mono',monospace;font-size:0.8rem;
+  color:var(--accent3);margin-top:0.75rem;
+}
+
+/* LEADERBOARD */
+.leaderboard-list{display:flex;flex-direction:column;gap:0.75rem;}
+.lb-item{
+  display:flex;align-items:center;gap:1rem;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:1rem 1.5rem;
+  cursor:pointer;transition:all var(--transition);
+}
+.lb-item:hover{border-color:var(--accent2);transform:translateX(4px);}
+.lb-rank{
+  font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;
+  width:36px;text-align:center;flex-shrink:0;
+}
+.lb-rank.gold{color:#fbbf24;}
+.lb-rank.silver{color:#94a3b8;}
+.lb-rank.bronze{color:#a16207;}
+.lb-avatar{
+  width:44px;height:44px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+}
+.lb-info{flex:1;}
+.lb-name{font-weight:600;font-size:0.95rem;}
+.lb-level{font-size:0.78rem;color:var(--text2);}
+.lb-xp{
+  font-family:'JetBrains Mono',monospace;font-size:0.85rem;
+  font-weight:600;color:var(--accent);
+}
+
+/* NOTIFICATION PANEL */
+.notif-panel{
+  position:fixed;top:70px;right:1rem;width:320px;
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius);z-index:200;
+  box-shadow:0 20px 60px rgba(0,0,0,0.5);
+  transform:translateY(-10px) scale(0.95);
+  opacity:0;pointer-events:none;
+  transition:all var(--transition);overflow:hidden;
+}
+.notif-panel.open{transform:none;opacity:1;pointer-events:all;}
+.notif-header{
+  padding:1rem 1.25rem;border-bottom:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.notif-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;}
+.notif-list{max-height:350px;overflow-y:auto;padding:0.75rem;}
+.notif-item{
+  padding:0.75rem;border-radius:10px;margin-bottom:0.5rem;
+  background:var(--surface);border:1px solid var(--border);
+  font-size:0.85rem;line-height:1.5;transition:all var(--transition);
+}
+.notif-item.unread{border-color:rgba(124,58,255,0.3);}
+.notif-time{font-size:0.72rem;color:var(--text2);margin-top:0.3rem;font-family:'JetBrains Mono',monospace;}
+.notif-empty{text-align:center;padding:2rem;color:var(--text2);font-size:0.9rem;}
+
+/* MODALS */
+.modal-overlay{
+  position:fixed;inset:0;z-index:300;
+  background:rgba(0,0,8,0.85);backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;
+  padding:1rem;opacity:0;pointer-events:none;
+  transition:opacity 0.3s ease;
+}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:20px;width:100%;max-width:500px;
+  max-height:90vh;overflow-y:auto;
+  transform:scale(0.95);transition:transform 0.3s ease;
+  position:relative;
+}
+.modal-overlay.open .modal{transform:none;}
+.modal-header{
+  padding:1.75rem 2rem 1.25rem;
+  border-bottom:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:flex-start;
+}
+.modal-title{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;}
+.close-btn{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:8px;width:32px;height:32px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--text2);font-size:1.1rem;
+  transition:all var(--transition);flex-shrink:0;
+}
+.close-btn:hover{border-color:var(--accent3);color:var(--accent3);}
+.modal-body{padding:1.5rem 2rem 2rem;}
+
+/* AUTH MODAL */
+.auth-providers{display:flex;flex-direction:column;gap:0.75rem;margin-bottom:1.5rem;}
+.auth-btn{
+  display:flex;align-items:center;gap:0.75rem;
+  padding:0.85rem 1.25rem;border-radius:12px;
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--text);font-family:'DM Sans',sans-serif;
+  font-size:0.95rem;font-weight:500;cursor:pointer;
+  transition:all var(--transition);
+}
+.auth-btn:hover{border-color:var(--accent);background:var(--surface2);}
+.auth-btn .prov-icon{width:22px;height:22px;flex-shrink:0;}
+.auth-divider{
+  text-align:center;color:var(--text2);font-size:0.85rem;
+  position:relative;margin:1.25rem 0;
+}
+.auth-divider::before,.auth-divider::after{
+  content:'';position:absolute;top:50%;width:40%;height:1px;
+  background:var(--border);
+}
+.auth-divider::before{left:0;}
+.auth-divider::after{right:0;}
+.phone-input-wrap{display:flex;gap:0.5rem;}
+.input{
+  width:100%;padding:0.75rem 1rem;border-radius:10px;
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.95rem;
+  outline:none;transition:all var(--transition);
+}
+.input:focus{border-color:var(--accent);box-shadow:var(--neon);}
+.input::placeholder{color:var(--text2);}
+.terms-row{
+  display:flex;align-items:flex-start;gap:0.75rem;
+  margin:1.25rem 0;font-size:0.85rem;color:var(--text2);
+}
+.terms-row a{color:var(--accent2);text-decoration:none;}
+.terms-row a:hover{text-decoration:underline;}
+
+/* LEVEL UP POPUP */
+.levelup-popup{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);
+  z-index:500;background:var(--bg2);
+  border:2px solid var(--accent);border-radius:24px;
+  padding:3rem;text-align:center;
+  box-shadow:0 0 60px rgba(124,58,255,0.5);
+  transition:transform 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  min-width:280px;
+}
+.levelup-popup.show{transform:translate(-50%,-50%) scale(1);}
+.levelup-icon{font-size:4rem;margin-bottom:1rem;animation:spin 0.5s ease;}
+@keyframes spin{from{transform:rotateY(0);}to{transform:rotateY(360deg);}}
+.levelup-title{
+  font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.levelup-sub{color:var(--text2);margin-top:0.5rem;}
+.levelup-xp{
+  margin-top:1.25rem;font-family:'JetBrains Mono',monospace;
+  font-size:1.1rem;color:var(--accent2);font-weight:700;
+}
+.confetti-wrap{position:fixed;inset:0;pointer-events:none;z-index:499;}
+
+/* BOOK MODAL */
+.book-modal-cover{
+  height:200px;background:linear-gradient(135deg,rgba(124,58,255,0.2),rgba(0,212,255,0.1));
+  border-radius:12px;display:flex;align-items:center;justify-content:center;
+  font-size:5rem;margin-bottom:1.5rem;
+}
+.stars{display:flex;gap:0.25rem;cursor:pointer;}
+.star{font-size:1.5rem;transition:all 0.1s;}
+.star.filled{color:#fbbf24;}
+.star.empty{color:var(--border);}
+.reviews-list{margin-top:1rem;display:flex;flex-direction:column;gap:0.75rem;}
+.review-item{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;padding:1rem;font-size:0.85rem;
+}
+.review-user{font-weight:600;margin-bottom:0.3rem;}
+.review-text{color:var(--text2);line-height:1.5;}
+.read-btn-wrap{margin-top:1.5rem;text-align:center;}
+
+/* TELEGRAM CTA */
+.tg-banner{
+  background:linear-gradient(135deg,rgba(0,136,255,0.1),rgba(124,58,255,0.1));
+  border:1px solid rgba(0,136,255,0.2);
+  border-radius:var(--radius);padding:2rem;
+  display:flex;align-items:center;gap:1.5rem;
+  margin:2rem 0;flex-wrap:wrap;
+}
+.tg-icon{font-size:3rem;flex-shrink:0;}
+.tg-text h3{font-family:'Syne',sans-serif;font-weight:700;margin-bottom:0.4rem;}
+.tg-text p{font-size:0.9rem;color:var(--text2);}
+.tg-btn{
+  padding:0.7rem 1.5rem;border-radius:10px;
+  background:linear-gradient(135deg,#0088ff,#006acc);
+  color:#fff;border:none;font-weight:600;cursor:pointer;
+  text-decoration:none;display:inline-block;font-family:'DM Sans',sans-serif;
+  font-size:0.9rem;transition:all var(--transition);white-space:nowrap;
+  margin-left:auto;
+}
+.tg-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,136,255,0.4);}
+
+/* FORMS.APP */
+.forms-section{margin-top:3rem;border-top:1px solid var(--border);padding-top:2rem;}
+.forms-loader{
+  height:300px;display:flex;align-items:center;justify-content:center;
+  background:var(--surface);border-radius:var(--radius);
+}
+.spinner{
+  width:40px;height:40px;border-radius:50%;
+  border:3px solid var(--border);
+  border-top-color:var(--accent);
+  animation:spin2 0.7s linear infinite;
+}
+@keyframes spin2{to{transform:rotate(360deg);}}
+#forms-iframe-wrap{display:none;}
+
+/* MAINTENANCE */
+#maintenance-screen{
+  position:fixed;inset:0;z-index:9998;
+  background:var(--bg);
+  display:none;align-items:center;justify-content:center;
+  flex-direction:column;text-align:center;padding:2rem;
+}
+.maintenance-icon{font-size:5rem;margin-bottom:1.5rem;animation:float3d 2s ease-in-out infinite alternate;}
+.maintenance-title{font-family:'Syne',sans-serif;font-size:2.5rem;font-weight:800;margin-bottom:1rem;}
+.maintenance-text{color:var(--text2);max-width:400px;line-height:1.6;}
+
+/* THEME TOGGLE */
+.theme-btn::before{content:'☀️';}
+[data-theme="light"] .theme-btn::before{content:'🌙';}
+
+/* PROFILE PUBLIC CARD */
+.pub-profile-card{
+  text-align:center;
+}
+.pub-avatar{
+  width:80px;height:80px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:2rem;margin:0 auto 1rem;
+}
+.pub-badges{display:flex;flex-wrap:wrap;gap:0.5rem;justify-content:center;margin-top:1rem;}
+
+/* TEXTAREA */
+textarea.input{resize:vertical;min-height:100px;}
+
+/* ADMIN MSG */
+.msg-cost{
+  display:inline-flex;align-items:center;gap:0.4rem;
+  background:rgba(124,58,255,0.1);border:1px solid rgba(124,58,255,0.3);
+  border-radius:8px;padding:0.3rem 0.7rem;font-size:0.82rem;
+  font-family:'JetBrains Mono',monospace;color:var(--accent);margin-bottom:1rem;
+}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .tab-panel{padding:1.5rem 1rem;}
+  .hero h1{letter-spacing:-1px;}
+  .profile-top{flex-direction:column;text-align:center;}
+  .books-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));}
+  .notif-panel{width:calc(100vw - 2rem);right:1rem;}
+  .nav-tabs .tab-btn span{display:none;}
+  .lb-item{padding:0.75rem 1rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- MAINTENANCE SCREEN -->
+<div id="maintenance-screen">
+  <div class="maintenance-icon">🔧</div>
+  <h1 class="maintenance-title">Under Maintenance</h1>
+  <p class="maintenance-text">We're upgrading the platform to bring you an even better experience. Check back soon!</p>
+  <div style="margin-top:1.5rem;font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:var(--text2);">— The LearnX10 Team</div>
+</div>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-logo">LearnX10</div>
+  <div class="loader-sub">Learn · Earn · Unlock</div>
+  <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+</div>
+
+<!-- PARTICLES / ORBS -->
+<div id="particles"></div>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+
+<!-- LEVEL UP POPUP -->
+<div class="confetti-wrap" id="confetti"></div>
+<div class="levelup-popup" id="levelupPopup">
+  <div class="levelup-icon" id="levelupIcon">🎉</div>
+  <div class="levelup-title" id="levelupTitle">Level Up!</div>
+  <div class="levelup-sub" id="levelupSub">You reached a new level</div>
+  <div class="levelup-xp" id="levelupXp">+50 XP Bonus Awarded!</div>
+  <button class="btn-primary" style="margin-top:1.5rem;" onclick="closeLevelup()">Awesome! 🚀</button>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">LearnX10</a>
+  <div class="nav-tabs">
+    <button class="tab-btn active" data-tab="home" onclick="switchTab('home',this)">🏠 <span>Home</span></button>
+    <button class="tab-btn" data-tab="library" onclick="switchTab('library',this)">📚 <span>Library</span></button>
+    <button class="tab-btn" data-tab="giveaway" onclick="switchTab('giveaway',this)">🎁 <span>Giveaways</span></button>
+    <button class="tab-btn" data-tab="leaderboard" onclick="switchTab('leaderboard',this)">🏆 <span>Leaderboard</span></button>
+    <button class="tab-btn" data-tab="profile" onclick="switchTab('profile',this)" id="profileTabBtn">👤 <span>Profile</span></button>
+  </div>
+  <div class="nav-actions">
+    <div class="xp-chip" id="xpChip" style="display:none" onclick="switchTab('profile',document.querySelector('[data-tab=profile]'))">⚡ <span id="xpDisplay">0</span> XP</div>
+    <button class="icon-btn theme-btn" onclick="toggleTheme()" title="Toggle Theme"></button>
+    <button class="icon-btn" onclick="toggleNotif()" title="Notifications">
+      🔔<span class="notif-badge" id="notifBadge">0</span>
+    </button>
+    <button class="login-btn" id="authBtn" onclick="openAuth()">Sign In</button>
+  </div>
+</nav>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap" id="marqueeWrap">
+  <div class="marquee-track" id="marqueeTrack">
+    <span class="marquee-item">🎉 Welcome to <span>LearnX10</span> — The Future of Learning</span>
+    <span class="marquee-item">📚 New books added weekly — Earn XP to unlock</span>
+    <span class="marquee-item">🔥 Join the <span>Telegram Community</span> for exclusive updates</span>
+    <span class="marquee-item">⚡ Daily login rewards — Don't break your streak!</span>
+    <span class="marquee-item">🏆 Compete on the leaderboard — Rise to Legend</span>
+    <span class="marquee-item">🎁 New Giveaway available now — Enter with XP tickets</span>
+    <span class="marquee-item">🎉 Welcome to <span>LearnX10</span> — The Future of Learning</span>
+    <span class="marquee-item">📚 New books added weekly — Earn XP to unlock</span>
+    <span class="marquee-item">🔥 Join the <span>Telegram Community</span> for exclusive updates</span>
+    <span class="marquee-item">⚡ Daily login rewards — Don't break your streak!</span>
+    <span class="marquee-item">🏆 Compete on the leaderboard — Rise to Legend</span>
+    <span class="marquee-item">🎁 New Giveaway available now — Enter with XP tickets</span>
+  </div>
+</div>
+
+<!-- NOTIFICATION PANEL -->
+<div class="notif-panel" id="notifPanel">
+  <div class="notif-header">
+    <span class="notif-title">Notifications</span>
+    <button onclick="markAllRead()" style="font-size:0.78rem;color:var(--accent2);background:none;border:none;cursor:pointer;">Mark all read</button>
+  </div>
+  <div class="notif-list" id="notifList">
+    <div class="notif-empty">No notifications yet</div>
+  </div>
+</div>
+
+<!-- TAB PANELS -->
+<!-- HOME -->
+<div class="tab-panel active" id="tab-home">
+  <div class="hero">
+    <div class="hero-badge">✦ Gamified Learning Platform</div>
+    <h1>Learn Smarter.<br><span class="grad">Earn Rewards.</span><br>Unlock Knowledge.</h1>
+    <p>Earn XP through daily engagement, level up your profile, and unlock access to premium educational resources.</p>
+    <div class="hero-cta">
+      <button class="btn-primary" onclick="openAuth()">Get Started Free 🚀</button>
+      <a href="https://t.me/Learn_x_10" target="_blank" class="btn-secondary">Join Telegram 📱</a>
+    </div>
+  </div>
+
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card">
+      <div class="stat-num" id="statUsers">—</div>
+      <div class="stat-label">Total Learners</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statBooks">42+</div>
+      <div class="stat-label">Premium Books</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statXp">—</div>
+      <div class="stat-label">XP in Economy</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statUnlocks">—</div>
+      <div class="stat-label">Books Unlocked</div>
+    </div>
+  </div>
+
+  <div class="tg-banner">
+    <div class="tg-icon">📣</div>
+    <div class="tg-text">
+      <h3>Join the LearnX10 Community</h3>
+      <p>Get daily updates, study tips, and exclusive announcements. 1000+ active learners.</p>
+    </div>
+    <a href="https://t.me/Learn_x_10" target="_blank" class="tg-btn">Join Now →</a>
+  </div>
+
+  <div class="features">
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <h3>XP Gamification</h3>
+      <p>Earn XP every day you log in. Level up through 8 tiers from Newcomer to Legend with real rewards at every milestone.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📚</div>
+      <h3>Premium Library</h3>
+      <p>Access 42+ curated educational books. Each unlocked with XP, ensuring only serious learners enter the vault.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🎁</div>
+      <h3>Exclusive Giveaways</h3>
+      <p>Use XP tickets to enter prize giveaways. Buy extra tickets to boost your winning probability.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🏆</div>
+      <h3>Live Leaderboard</h3>
+      <p>Compete with learners worldwide. Rank based on XP and badges earned, visible to the entire community.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔥</div>
+      <h3>Streak System</h3>
+      <p>Maintain daily login streaks to unlock exclusive streak badges. Consistent learners get bonus XP multipliers.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🛡️</div>
+      <h3>12-Layer Security</h3>
+      <p>Industry-leading vault protection ensures resource URLs are never exposed. Bot detection and anti-bypass measures built-in.</p>
+    </div>
+  </div>
+</div>
+
+<!-- LIBRARY -->
+<div class="tab-panel" id="tab-library">
+  <div class="section-header">
+    <h2 class="section-title">📚 Library</h2>
+    <div class="search-bar">
+      <input class="search-input" id="bookSearch" type="text" placeholder="Search books..." oninput="filterBooks()"/>
+      <select class="filter-select" id="catFilter" onchange="filterBooks()">
+        <option value="">All Categories</option>
+        <option value="Science">Science</option>
+        <option value="Technology">Technology</option>
+        <option value="Mathematics">Mathematics</option>
+        <option value="Self-Help">Self-Help</option>
+        <option value="Finance">Finance</option>
+        <option value="Language">Language</option>
+        <option value="History">History</option>
+      </select>
+    </div>
+  </div>
+  <div class="books-grid" id="booksGrid">
+    <div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text2);">
+      <div class="spinner" style="margin:0 auto 1rem;"></div>
+      Loading Library...
+    </div>
+  </div>
+
+  <div class="forms-section">
+    <h3 style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:700;margin-bottom:1rem;">📬 Request a Book</h3>
+    <p style="color:var(--text2);font-size:0.9rem;margin-bottom:1.5rem;">Can't find what you're looking for? Request it and we'll add it!</p>
+    <div id="forms-loader-wrap" class="forms-loader">
+      <div>
+        <div class="spinner" style="margin:0 auto 1rem;"></div>
+        <div style="color:var(--text2);font-size:0.9rem;">Loading form...</div>
+      </div>
+    </div>
+    <div id="forms-iframe-wrap">
+      <div formsappId="6976dd04bd234eb75ef77e8a"></div>
+    </div>
+  </div>
+</div>
+
+<!-- GIVEAWAY -->
+<div class="tab-panel" id="tab-giveaway">
+  <div class="section-header">
+    <h2 class="section-title">🎁 Giveaways</h2>
+    <div class="xp-chip" id="giveawayXpDisplay">⚡ <span id="gwXp">0</span> XP Available</div>
+  </div>
+  <div class="giveaway-grid" id="giveawayGrid">
+    <div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text2);">
+      <div class="spinner" style="margin:0 auto 1rem;"></div>
+      Loading Giveaways...
+    </div>
+  </div>
+</div>
+
+<!-- LEADERBOARD -->
+<div class="tab-panel" id="tab-leaderboard">
+  <div class="section-header">
+    <h2 class="section-title">🏆 Leaderboard</h2>
+    <div style="font-size:0.85rem;color:var(--text2);">Updated in real-time</div>
+  </div>
+  <div class="leaderboard-list" id="leaderboardList">
+    <div style="text-align:center;padding:3rem;color:var(--text2);">
+      <div class="spinner" style="margin:0 auto 1rem;"></div>
+      Loading Leaderboard...
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE -->
+<div class="tab-panel" id="tab-profile">
+  <div id="profileSignedOut" style="text-align:center;padding:4rem 1rem;">
+    <div style="font-size:4rem;margin-bottom:1rem;">👤</div>
+    <h2 style="font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;margin-bottom:0.75rem;">Sign In to View Profile</h2>
+    <p style="color:var(--text2);margin-bottom:2rem;">Track your XP, badges, and learning progress.</p>
+    <button class="btn-primary" onclick="openAuth()">Sign In Now</button>
+  </div>
+  <div id="profileSignedIn" style="display:none;">
+    <div class="profile-card" id="mainProfileCard">
+      <div class="profile-top">
+        <div class="avatar-wrap" id="profileAvatar">🧠
+          <div class="level-ring" id="levelRing"></div>
+        </div>
+        <div>
+          <div class="profile-name" id="profileName">—</div>
+          <div class="profile-level" id="profileLevelTitle">Level 0 · Newcomer</div>
+          <div class="profile-joined" id="profileJoined">Joined —</div>
+        </div>
+      </div>
+      <div class="xp-bar-wrap">
+        <div class="xp-bar-labels">
+          <span id="xpBarLabel">0 XP</span>
+          <span id="xpBarNext">Next Level: 200 XP</span>
+        </div>
+        <div class="xp-bar"><div class="xp-bar-fill" id="xpBarFill" style="width:0%"></div></div>
+      </div>
+      <div style="margin-bottom:1rem;">
+        <div style="font-size:0.85rem;color:var(--text2);margin-bottom:0.75rem;font-weight:600;">🎖 BADGES</div>
+        <div class="badges-grid" id="badgesGrid"></div>
+      </div>
+      <div style="margin-bottom:1rem;">
+        <div style="font-size:0.85rem;color:var(--text2);margin-bottom:0.75rem;font-weight:600;">📅 STREAK</div>
+        <div style="font-family:'JetBrains Mono',monospace;color:var(--accent2);font-size:1.2rem;" id="streakDisplay">🔥 0 days</div>
+      </div>
+      <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:1.5rem;">
+        <button class="btn-primary" onclick="openMessageAdmin()">💬 Message Admin <span style="font-size:0.75rem;opacity:0.8;">(10 XP)</span></button>
+        <button class="btn-secondary" onclick="signOutUser()">Sign Out</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Welcome to LearnX10 ✦</div>
+        <div style="font-size:0.85rem;color:var(--text2);margin-top:0.3rem;">Sign in to start earning XP</div>
+      </div>
+      <button class="close-btn" onclick="closeModal('authModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="auth-providers">
+        <button class="auth-btn" onclick="signInGoogle()">
+          <svg class="prov-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Continue with Google
+        </button>
+        <button class="auth-btn" onclick="signInGithub()">
+          <svg class="prov-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          Continue with GitHub
+        </button>
+        <button class="auth-btn" onclick="signInMicrosoft()">
+          <svg class="prov-icon" viewBox="0 0 24 24"><path fill="#f25022" d="M1 1h10v10H1z"/><path fill="#00a4ef" d="M13 1h10v10H13z"/><path fill="#7fba00" d="M1 13h10v10H1z"/><path fill="#ffb900" d="M13 13h10v10H13z"/></svg>
+          Continue with Microsoft
+        </button>
+      </div>
+      <div class="auth-divider">or use phone number</div>
+      <div id="phoneStep1">
+        <div class="phone-input-wrap">
+          <input class="input" style="width:90px;" value="+91" id="phoneCC" placeholder="+91"/>
+          <input class="input" id="phoneNum" type="tel" placeholder="Mobile number" maxlength="10"/>
+        </div>
+        <div id="recaptcha-container" style="margin:1rem 0;"></div>
+        <button class="btn-primary" style="width:100%;margin-top:0.5rem;" onclick="sendOTP()">Send OTP</button>
+      </div>
+      <div id="phoneStep2" style="display:none;">
+        <p style="font-size:0.85rem;color:var(--text2);margin-bottom:1rem;">Enter the 6-digit OTP sent to your phone</p>
+        <input class="input" id="otpInput" type="text" placeholder="Enter OTP" maxlength="6"/>
+        <button class="btn-primary" style="width:100%;margin-top:0.75rem;" onclick="verifyOTP()">Verify OTP</button>
+        <button onclick="document.getElementById('phoneStep1').style.display='block';document.getElementById('phoneStep2').style.display='none';" style="width:100%;margin-top:0.5rem;background:none;border:none;color:var(--text2);cursor:pointer;font-size:0.85rem;">← Back</button>
+      </div>
+      <div class="terms-row" style="margin-top:1.25rem;">
+        <input type="checkbox" id="termsCheck" style="margin-top:2px;flex-shrink:0;accent-color:var(--accent);"/>
+        <label for="termsCheck">I agree to the <a href="#" onclick="openTerms();return false;">Fair Play Policy</a> and platform rules</label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TERMS MODAL -->
+<div class="modal-overlay" id="termsModal">
+  <div class="modal" style="max-width:600px;">
+    <div class="modal-header">
+      <div class="modal-title">⚖️ Fair Play Policy</div>
+      <button class="close-btn" onclick="closeModal('termsModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="line-height:1.8;font-size:0.9rem;color:var(--text2);">
+        <h3 style="color:var(--text);font-family:'Syne',sans-serif;margin-bottom:1rem;">LearnX10 Community Standards</h3>
+        <p style="margin-bottom:1rem;">By using LearnX10, you commit to the following principles:</p>
+        <div style="display:flex;flex-direction:column;gap:0.75rem;">
+          <div style="background:var(--surface);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:0.75rem 1rem;">
+            <strong style="color:var(--text);">1. No Automation or Bots</strong><br>
+            Automated scripts, bots, or tools to farm XP are strictly prohibited and will result in permanent ban.
+          </div>
+          <div style="background:var(--surface);border-left:3px solid var(--accent2);border-radius:0 8px 8px 0;padding:0.75rem 1rem;">
+            <strong style="color:var(--text);">2. One Account Per Person</strong><br>
+            Creating multiple accounts to gain advantages is against our policy and both accounts will be banned.
+          </div>
+          <div style="background:var(--surface);border-left:3px solid var(--accent3);border-radius:0 8px 8px 0;padding:0.75rem 1rem;">
+            <strong style="color:var(--text);">3. No Sharing of Unlocked Resources</strong><br>
+            Distributing, sharing, or publishing unlocked book URLs outside the platform violates copyright and our terms.
+          </div>
+          <div style="background:var(--surface);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:0.75rem 1rem;">
+            <strong style="color:var(--text);">4. Respectful Conduct</strong><br>
+            Harassment, hate speech, or abusive behavior toward other members or admins is not tolerated.
+          </div>
+          <div style="background:var(--surface);border-left:3px solid var(--accent2);border-radius:0 8px 8px 0;padding:0.75rem 1rem;">
+            <strong style="color:var(--text);">5. No Tampering with Security</strong><br>
+            Attempting to bypass security measures, inspect elements, or reverse-engineer the platform triggers an automatic permanent ban.
+          </div>
+          <div style="background:var(--surface);border-left:3px solid var(--accent3);border-radius:0 8px 8px 0;padding:0.75rem 1rem;">
+            <strong style="color:var(--text);">6. Giveaway Integrity</strong><br>
+            All giveaway entries must be legitimate. Any suspicious activity in giveaways results in disqualification.
+          </div>
+        </div>
+        <p style="margin-top:1.5rem;font-style:italic;">Violations of these policies result in XP deduction, temporary suspension, or permanent ban at admin discretion.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOOK DETAIL MODAL -->
+<div class="modal-overlay" id="bookModal">
+  <div class="modal" style="max-width:550px;">
+    <div class="modal-header">
+      <div class="modal-title" id="bookModalTitle">Book Title</div>
+      <button class="close-btn" onclick="closeModal('bookModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="book-modal-cover" id="bookModalCover">📖</div>
+      <div id="bookModalDetails" style="margin-bottom:1.5rem;">
+        <div style="color:var(--text2);font-size:0.9rem;line-height:1.7;" id="bookModalDesc">Description loading...</div>
+        <div style="display:flex;gap:1rem;margin-top:1rem;flex-wrap:wrap;">
+          <div style="font-size:0.82rem;color:var(--text2);">Author: <span style="color:var(--text);" id="bookModalAuthor">—</span></div>
+          <div style="font-size:0.82rem;color:var(--text2);">Category: <span style="color:var(--text);" id="bookModalCat">—</span></div>
+          <div style="font-size:0.82rem;color:var(--text2);">Cost: <span style="color:var(--accent);font-family:'JetBrains Mono',monospace;" id="bookModalXp">—</span></div>
+        </div>
+      </div>
+      <div id="bookReviewSection">
+        <div style="font-weight:600;margin-bottom:0.75rem;font-size:0.9rem;">⭐ Rate & Review</div>
+        <div class="stars" id="ratingStars">
+          <span class="star empty" data-val="1" onclick="setRating(1)">★</span>
+          <span class="star empty" data-val="2" onclick="setRating(2)">★</span>
+          <span class="star empty" data-val="3" onclick="setRating(3)">★</span>
+          <span class="star empty" data-val="4" onclick="setRating(4)">★</span>
+          <span class="star empty" data-val="5" onclick="setRating(5)">★</span>
+        </div>
+        <textarea class="input" id="reviewText" placeholder="Write your review..." style="margin-top:0.75rem;min-height:80px;"></textarea>
+        <button class="btn-primary" style="margin-top:0.75rem;width:100%;" onclick="submitReview()">Submit Review</button>
+        <div class="reviews-list" id="reviewsList"></div>
+      </div>
+      <div class="read-btn-wrap" id="readBtnWrap"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MESSAGE ADMIN MODAL -->
+<div class="modal-overlay" id="msgAdminModal">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header">
+      <div class="modal-title">💬 Message Admin</div>
+      <button class="close-btn" onclick="closeModal('msgAdminModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="msg-cost">⚡ 10 XP will be deducted</div>
+      <p style="font-size:0.88rem;color:var(--text2);margin-bottom:1rem;line-height:1.6;">
+        Your message will be delivered directly to the admin's notification center. If it gets pinned, it will be shown to all users!
+      </p>
+      <textarea class="input" id="adminMsgText" placeholder="Type your message here..." style="min-height:120px;"></textarea>
+      <button class="btn-primary" style="width:100%;margin-top:1rem;" onclick="sendAdminMessage()">Send Message (10 XP)</button>
+    </div>
+  </div>
+</div>
+
+<!-- PUBLIC PROFILE MODAL -->
+<div class="modal-overlay" id="pubProfileModal">
+  <div class="modal" style="max-width:380px;">
+    <div class="modal-header">
+      <div class="modal-title">User Profile</div>
+      <button class="close-btn" onclick="closeModal('pubProfileModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="pub-profile-card" id="pubProfileContent"></div>
+    </div>
+  </div>
+</div>
+
+<!-- GIVEAWAY STATS MODAL -->
+<div class="modal-overlay" id="gwStatsModal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <div class="modal-title">📊 Giveaway Stats</div>
+      <button class="close-btn" onclick="closeModal('gwStatsModal')">✕</button>
+    </div>
+    <div class="modal-body" id="gwStatsBody"></div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, GithubAuthProvider, OAuthProvider,
+         signInWithPopup, signInWithPhoneNumber, RecaptchaVerifier,
+         onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query,
+         orderBy, limit, getDocs, onSnapshot, addDoc, increment, serverTimestamp,
+         where, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBTsSHQDDZQxke_cDMaoalK7-Ffzy0YSeM",
+  authDomain: "learnx10-hub.firebaseapp.com",
+  projectId: "learnx10-hub",
+  storageBucket: "learnx10-hub.firebasestorage.app",
+  messagingSenderId: "127942677227",
+  appId: "1:127942677227:web:e8516a7d48d717d11564ae"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const ADMIN_EMAIL = "rakshitpal9690@gmail.com";
+const LEVELS = [
+  {level:0,xpRequired:0,xpReward:0,title:"Newcomer"},
+  {level:1,xpRequired:200,xpReward:50,title:"Explorer"},
+  {level:2,xpRequired:500,xpReward:100,title:"Learner"},
+  {level:3,xpRequired:1000,xpReward:200,title:"Scholar"},
+  {level:4,xpRequired:2000,xpReward:350,title:"Sage"},
+  {level:5,xpRequired:3500,xpReward:500,title:"Master"},
+  {level:6,xpRequired:5500,xpReward:750,title:"Grandmaster"},
+  {level:7,xpRequired:8000,xpReward:1000,title:"Legend"},
+];
+const BADGES = [
+  {id:"newcomer",name:"Newcomer",icon:"🌱",xpRequired:0,streakRequired:0},
+  {id:"novice",name:"Novice",icon:"📚",xpRequired:200,streakRequired:0},
+  {id:"consistent",name:"Consistent Learner",icon:"🔥",xpRequired:0,streakRequired:10},
+  {id:"pro",name:"Pro",icon:"⚡",xpRequired:1000,streakRequired:0},
+  {id:"dedicated",name:"Dedicated",icon:"💎",xpRequired:0,streakRequired:30},
+  {id:"master",name:"Master",icon:"🏆",xpRequired:3500,streakRequired:0},
+  {id:"legend",name:"Legend",icon:"👑",xpRequired:8000,streakRequired:0},
+];
+
+let currentUser = null;
+let userData = null;
+let allBooks = [];
+let currentBookId = null;
+let currentRating = 0;
+let confirmationResult = null;
+let unsubNotif = null;
+
+// ——— LOADER ———
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('loader').classList.add('hide');
+    initParticles();
+    checkMaintenance();
+  }, 2000);
+});
+
+function initParticles() {
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = Math.random() * 4 + 2;
+    const colors = ['rgba(124,58,255,0.6)','rgba(0,212,255,0.6)','rgba(255,58,170,0.4)'];
+    p.style.cssText = `
+      width:${size}px;height:${size}px;left:${Math.random()*100}%;
+      background:${colors[Math.floor(Math.random()*3)]};
+      animation-duration:${Math.random()*15+10}s;
+      animation-delay:${Math.random()*10}s;
+    `;
+    container.appendChild(p);
+  }
+}
+
+async function checkMaintenance() {
+  try {
+    const cfgDoc = await getDoc(doc(db,'config','site'));
+    if (cfgDoc.exists() && cfgDoc.data().maintenance) {
+      document.getElementById('maintenance-screen').style.display='flex';
+    }
+  } catch(e) {}
+  loadStats();
+  loadMarquee();
+}
+
+// ——— AUTH STATE ———
+onAuthStateChanged(auth, async (user) => {
+  currentUser = user;
+  if (user) {
+    await loadUserData(user);
+    document.getElementById('authBtn').style.display = 'none';
+    document.getElementById('xpChip').style.display = 'flex';
+    document.getElementById('profileTabBtn').style.display = 'flex';
+    document.getElementById('profileSignedOut').style.display = 'none';
+    document.getElementById('profileSignedIn').style.display = 'block';
+    renderProfile();
+    subscribeNotifications();
+    checkDailyLogin();
+  } else {
+    userData = null;
+    document.getElementById('authBtn').style.display = 'block';
+    document.getElementById('xpChip').style.display = 'none';
+    document.getElementById('profileSignedOut').style.display = 'block';
+    document.getElementById('profileSignedIn').style.display = 'none';
+    if (unsubNotif) { unsubNotif(); unsubNotif=null; }
+  }
+});
+
+async function loadUserData(user) {
+  const ref = doc(db,'users',user.uid);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) {
+    const newUser = {
+      uid: user.uid,
+      displayName: user.displayName || 'Learner',
+      email: user.email || '',
+      photoURL: user.photoURL || '',
+      xp: 0, level: 0, streak: 0, maxStreak: 0,
+      lastLogin: null, joinedAt: serverTimestamp(),
+      badges: ['newcomer'], unlockedBooks: [],
+      isAdmin: user.email === ADMIN_EMAIL,
+      banned: false,
+    };
+    await setDoc(ref, newUser);
+    userData = newUser;
+  } else {
+    userData = snap.data();
+    if (userData.banned) {
+      await signOut(auth);
+      alert('Your account has been suspended.');
+      return;
+    }
+  }
+}
+
+// ——— DAILY LOGIN ———
+async function checkDailyLogin() {
+  if (!currentUser || !userData) return;
+  const now = new Date();
+  const lastLogin = userData.lastLogin?.toDate?.() || null;
+  const todayStr = now.toDateString();
+  if (lastLogin && lastLogin.toDateString() === todayStr) return;
+
+  const yesterdayStr = new Date(now - 86400000).toDateString();
+  let streak = userData.streak || 0;
+  if (lastLogin && lastLogin.toDateString() === yesterdayStr) {
+    streak += 1;
+  } else {
+    streak = 1;
+  }
+  const maxStreak = Math.max(userData.maxStreak || 0, streak);
+  const xpGain = 20 + (streak > 7 ? 10 : 0);
+
+  const ref = doc(db,'users',currentUser.uid);
+  await updateDoc(ref, {
+    xp: increment(xpGain),
+    streak, maxStreak,
+    lastLogin: serverTimestamp(),
+    lastLoginDate: todayStr,
+  });
+  userData.xp = (userData.xp || 0) + xpGain;
+  userData.streak = streak;
+  userData.maxStreak = maxStreak;
+
+  showToast(`🌅 Daily Login! +${xpGain} XP · ${streak} day streak 🔥`);
+  checkLevelUp(userData.xp - xpGain, userData.xp);
+  checkBadges();
+  renderProfile();
+}
+
+function getCurrentLevel(xp) {
+  let cur = LEVELS[0];
+  for (const l of LEVELS) { if (xp >= l.xpRequired) cur = l; else break; }
+  return cur;
+}
+function getNextLevel(xp) {
+  for (const l of LEVELS) { if (xp < l.xpRequired) return l; }
+  return null;
+}
+
+async function checkLevelUp(oldXp, newXp) {
+  const oldLevel = getCurrentLevel(oldXp);
+  const newLevel = getCurrentLevel(newXp);
+  if (newLevel.level > oldLevel.level) {
+    const ref = doc(db,'users',currentUser.uid);
+    await updateDoc(ref, { level: newLevel.level, xp: increment(newLevel.xpReward) });
+    userData.xp += newLevel.xpReward;
+    userData.level = newLevel.level;
+    showLevelUp(newLevel);
+    renderProfile();
+  }
+}
+
+function showLevelUp(lvl) {
+  document.getElementById('levelupTitle').textContent = `Level ${lvl.level} — ${lvl.title}!`;
+  document.getElementById('levelupSub').textContent = 'You reached a new level!';
+  document.getElementById('levelupXp').textContent = `+${lvl.xpReward} XP Bonus Awarded!`;
+  document.getElementById('levelupPopup').classList.add('show');
+  spawnConfetti();
+}
+window.closeLevelup = function() {
+  document.getElementById('levelupPopup').classList.remove('show');
+  document.getElementById('confetti').innerHTML = '';
+};
+
+function spawnConfetti() {
+  const wrap = document.getElementById('confetti');
+  wrap.innerHTML = '';
+  const colors = ['#7c3aff','#00d4ff','#ff3aaa','#fbbf24','#34d399'];
+  for (let i=0;i<80;i++) {
+    const c = document.createElement('div');
+    const color = colors[Math.floor(Math.random()*5)];
+    c.style.cssText = `
+      position:absolute;width:8px;height:8px;
+      background:${color};border-radius:${Math.random()>0.5?'50%':'2px'};
+      left:${Math.random()*100}%;top:-10px;
+      animation:confettiFall ${Math.random()*2+1}s ${Math.random()*1}s linear forwards;
+    `;
+    wrap.appendChild(c);
+  }
+  if (!document.getElementById('confettiStyle')) {
+    const style = document.createElement('style');
+    style.id = 'confettiStyle';
+    style.textContent = '@keyframes confettiFall{to{transform:translateY(100vh) rotate(720deg);opacity:0;}}';
+    document.head.appendChild(style);
+  }
+}
+
+async function checkBadges() {
+  if (!userData) return;
+  const earned = (userData.badges || []);
+  const newBadges = [];
+  for (const b of BADGES) {
+    if (earned.includes(b.id)) continue;
+    const xpMet = b.xpRequired === 0 || (userData.xp || 0) >= b.xpRequired;
+    const streakMet = b.streakRequired === 0 || (userData.maxStreak || 0) >= b.streakRequired;
+    if (xpMet && streakMet) newBadges.push(b.id);
+  }
+  if (newBadges.length > 0) {
+    const all = [...earned, ...newBadges];
+    await updateDoc(doc(db,'users',currentUser.uid), { badges: all });
+    userData.badges = all;
+    for (const bid of newBadges) {
+      const b = BADGES.find(x=>x.id===bid);
+      if (b) showToast(`🎖 Badge Unlocked: ${b.icon} ${b.name}!`);
+    }
+    renderProfile();
+  }
+}
+
+// ——— PROFILE ———
+function renderProfile() {
+  if (!userData) return;
+  const xp = userData.xp || 0;
+  const lvl = getCurrentLevel(xp);
+  const nextLvl = getNextLevel(xp);
+  document.getElementById('xpDisplay').textContent = xp.toLocaleString();
+  document.getElementById('profileName').textContent = userData.displayName || 'Learner';
+  document.getElementById('profileLevelTitle').textContent = `Level ${lvl.level} · ${lvl.title}`;
+  document.getElementById('profileJoined').textContent = `Joined ${userData.joinedAt?.toDate?.()?.toLocaleDateString?.() || '—'}`;
+  document.getElementById('xpBarLabel').textContent = `${xp.toLocaleString()} XP`;
+  document.getElementById('streakDisplay').textContent = `🔥 ${userData.streak || 0} day streak`;
+
+  if (nextLvl) {
+    const pct = ((xp - lvl.xpRequired) / (nextLvl.xpRequired - lvl.xpRequired)) * 100;
+    document.getElementById('xpBarFill').style.width = pct + '%';
+    document.getElementById('xpBarNext').textContent = `Next: ${nextLvl.xpRequired.toLocaleString()} XP`;
+    document.getElementById('levelRing').style.setProperty('--progress', pct + '%');
+  } else {
+    document.getElementById('xpBarFill').style.width = '100%';
+    document.getElementById('xpBarNext').textContent = 'MAX LEVEL';
+  }
+
+  const badgesGrid = document.getElementById('badgesGrid');
+  badgesGrid.innerHTML = '';
+  for (const b of BADGES) {
+    const earned = (userData.badges || []).includes(b.id);
+    badgesGrid.innerHTML += `<div class="badge-item ${earned?'earned':'locked'}" title="${b.name}">${b.icon} ${b.name}</div>`;
+  }
+
+  document.getElementById('gwXp').textContent = xp.toLocaleString();
+}
+
+// ——— AUTH ———
+window.openAuth = function() { openModal('authModal'); };
+window.signOutUser = async function() {
+  await signOut(auth);
+  showToast('Signed out successfully');
+};
+
+window.signInGoogle = async function() {
+  if (!document.getElementById('termsCheck').checked) { alert('Please agree to the Fair Play Policy first.'); return; }
+  try {
+    await signInWithPopup(auth, new GoogleAuthProvider());
+    closeModal('authModal');
+    showToast('Welcome back! 🎉');
+  } catch(e) { showToast('Sign in failed: ' + e.message, true); }
+};
+window.signInGithub = async function() {
+  if (!document.getElementById('termsCheck').checked) { alert('Please agree to the Fair Play Policy first.'); return; }
+  try {
+    await signInWithPopup(auth, new GithubAuthProvider());
+    closeModal('authModal');
+    showToast('Welcome back! 🎉');
+  } catch(e) { showToast('Sign in failed: ' + e.message, true); }
+};
+window.signInMicrosoft = async function() {
+  if (!document.getElementById('termsCheck').checked) { alert('Please agree to the Fair Play Policy first.'); return; }
+  try {
+    await signInWithPopup(auth, new OAuthProvider('microsoft.com'));
+    closeModal('authModal');
+    showToast('Welcome back! 🎉');
+  } catch(e) { showToast('Sign in failed: ' + e.message, true); }
+};
+
+window.sendOTP = async function() {
+  if (!document.getElementById('termsCheck').checked) { alert('Please agree to the Fair Play Policy first.'); return; }
+  const cc = document.getElementById('phoneCC').value.trim();
+  const num = document.getElementById('phoneNum').value.trim();
+  if (!num || num.length < 8) { showToast('Enter a valid phone number', true); return; }
+  try {
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(auth,'recaptcha-container',{size:'normal'});
+    }
+    confirmationResult = await signInWithPhoneNumber(auth, cc + num, window.recaptchaVerifier);
+    document.getElementById('phoneStep1').style.display = 'none';
+    document.getElementById('phoneStep2').style.display = 'block';
+    showToast('OTP sent! Check your phone 📱');
+  } catch(e) { showToast('Failed to send OTP: ' + e.message, true); }
+};
+
+window.verifyOTP = async function() {
+  const otp = document.getElementById('otpInput').value.trim();
+  if (!otp || otp.length !== 6) { showToast('Enter valid 6-digit OTP', true); return; }
+  try {
+    await confirmationResult.confirm(otp);
+    closeModal('authModal');
+    showToast('Phone verified! Welcome 🎉');
+  } catch(e) { showToast('Invalid OTP', true); }
+};
+
+window.openTerms = function() { openModal('termsModal'); };
+
+// ——— LIBRARY ———
+async function loadLibrary() {
+  const grid = document.getElementById('booksGrid');
+  try {
+    const snap = await getDocs(collection(db,'books'));
+    allBooks = [];
+    snap.forEach(d => allBooks.push({id:d.id, ...d.data()}));
+    if (allBooks.length === 0) {
+      // Seed sample books if none exist
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text2);">No books in library yet. Check back soon!</div>';
+      return;
+    }
+    renderBooks(allBooks);
+    loadFormsApp();
+  } catch(e) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--accent3);">Failed to load library.</div>';
+  }
+}
+
+function renderBooks(books) {
+  const grid = document.getElementById('booksGrid');
+  if (!books.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text2);">No books found.</div>';
+    return;
+  }
+  grid.innerHTML = books.map(b => {
+    const unlocked = userData?.unlockedBooks?.includes(b.id);
+    const emoji = b.emoji || '📖';
+    const xpCost = b.xpCost || 100;
+    return `<div class="book-card" onclick="openBook('${b.id}')">
+      <div class="book-cover">
+        ${emoji}
+        <div class="book-lock ${unlocked?'unlocked':''}">
+          ${unlocked ? '🔓 Read' : `🔒 ${xpCost} XP`}
+        </div>
+      </div>
+      <div class="book-info">
+        <div class="book-title">${b.title || 'Untitled'}</div>
+        <div class="book-author">${b.author || '—'}</div>
+        <div class="book-xp">⚡ ${xpCost} XP</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.filterBooks = function() {
+  const q = document.getElementById('bookSearch').value.toLowerCase();
+  const cat = document.getElementById('catFilter').value;
+  const filtered = allBooks.filter(b => {
+    const matchQ = !q || (b.title||'').toLowerCase().includes(q) || (b.author||'').toLowerCase().includes(q);
+    const matchCat = !cat || b.category === cat;
+    return matchQ && matchCat;
+  });
+  renderBooks(filtered);
+};
+
+window.openBook = async function(bookId) {
+  const book = allBooks.find(b => b.id === bookId);
+  if (!book) return;
+  currentBookId = bookId;
+  currentRating = 0;
+  document.getElementById('bookModalTitle').textContent = book.title || 'Book';
+  document.getElementById('bookModalCover').textContent = book.emoji || '📖';
+  document.getElementById('bookModalDesc').textContent = book.description || 'No description available.';
+  document.getElementById('bookModalAuthor').textContent = book.author || '—';
+  document.getElementById('bookModalCat').textContent = book.category || '—';
+  document.getElementById('bookModalXp').textContent = (book.xpCost || 100) + ' XP';
+  document.getElementById('reviewText').value = '';
+  document.querySelectorAll('.star').forEach(s => { s.classList.remove('filled'); s.classList.add('empty'); });
+
+  const unlocked = userData?.unlockedBooks?.includes(bookId);
+  const readWrap = document.getElementById('readBtnWrap');
+  if (unlocked) {
+    readWrap.innerHTML = `<button class="btn-primary" style="width:100%" onclick="accessBook('${bookId}')">📖 Read Now</button>`;
+  } else if (currentUser) {
+    readWrap.innerHTML = `<button class="btn-primary" style="width:100%" onclick="unlockBook('${bookId}')">🔓 Unlock for ${book.xpCost||100} XP</button>`;
+  } else {
+    readWrap.innerHTML = `<button class="btn-primary" style="width:100%" onclick="openAuth()">Sign in to Unlock</button>`;
+  }
+  await loadReviews(bookId);
+  openModal('bookModal');
+};
+
+window.unlockBook = async function(bookId) {
+  if (!currentUser || !userData) { openAuth(); return; }
+  const book = allBooks.find(b => b.id === bookId);
+  const cost = book?.xpCost || 100;
+  if ((userData.xp || 0) < cost) {
+    showToast(`Not enough XP! Need ${cost} XP`, true); return;
+  }
+  try {
+    const ref = doc(db,'users',currentUser.uid);
+    const unlockedBooks = [...(userData.unlockedBooks||[]), bookId];
+    await updateDoc(ref, {
+      xp: increment(-cost),
+      unlockedBooks,
+    });
+    userData.xp -= cost;
+    userData.unlockedBooks = unlockedBooks;
+
+    // Log unlock
+    await updateDoc(doc(db,'config','stats'), { totalUnlocks: increment(1) }).catch(()=>{});
+
+    showToast(`🔓 Book unlocked! -${cost} XP`);
+    renderProfile();
+    renderBooks(allBooks);
+    document.getElementById('readBtnWrap').innerHTML = `<button class="btn-primary" style="width:100%" onclick="accessBook('${bookId}')">📖 Read Now</button>`;
+  } catch(e) { showToast('Unlock failed: ' + e.message, true); }
+};
+
+window.accessBook = async function(bookId) {
+  // 12-Layer Security: Generate one-time token in JS memory only
+  const book = allBooks.find(b => b.id === bookId);
+  if (!book || !userData?.unlockedBooks?.includes(bookId)) {
+    showToast('Access denied', true); return;
+  }
+  // Create secure session token
+  const token = btoa(JSON.stringify({
+    uid: currentUser.uid,
+    bookId,
+    ts: Date.now(),
+    exp: Date.now() + 60000, // 60s time-bomb
+    fp: getFingerprint(),
+    salt: Math.random().toString(36).slice(2),
+  }));
+
+  // Store token in Firestore for validation
+  await setDoc(doc(db,'tokens',token.slice(0,32)), {
+    uid: currentUser.uid, bookId, used: false,
+    expires: Timestamp.fromMillis(Date.now() + 60000),
+    shortLink: book.shortLink || '',
+  });
+
+  // Navigate to vault (token in sessionStorage only, not URL)
+  sessionStorage.setItem('vaultToken', token.slice(0,32));
+  sessionStorage.setItem('vaultBook', bookId);
+  sessionStorage.setItem('vaultTs', Date.now());
+  window.location.href = 'vault.html';
+};
+
+function getFingerprint() {
+  const parts = [navigator.userAgent, screen.width+'x'+screen.height, navigator.language];
+  let h = 0;
+  for (const c of parts.join('|')) { h = ((h<<5)-h)+c.charCodeAt(0); h|=0; }
+  return Math.abs(h).toString(36);
+}
+
+async function loadReviews(bookId) {
+  try {
+    const snap = await getDocs(query(
+      collection(db,'books',bookId,'reviews'),
+      orderBy('createdAt','desc'), limit(10)
+    ));
+    const list = document.getElementById('reviewsList');
+    list.innerHTML = '';
+    snap.forEach(d => {
+      const r = d.data();
+      list.innerHTML += `<div class="review-item">
+        <div class="review-user">${r.userName||'Anonymous'} · ${'★'.repeat(r.rating||0)}${'☆'.repeat(5-(r.rating||0))}</div>
+        <div class="review-text">${r.text||''}</div>
+      </div>`;
+    });
+    if (snap.empty) list.innerHTML = '<div style="color:var(--text2);font-size:0.85rem;text-align:center;padding:1rem;">No reviews yet. Be the first!</div>';
+  } catch(e) {}
+}
+
+window.setRating = function(val) {
+  currentRating = val;
+  document.querySelectorAll('.star').forEach(s => {
+    const v = parseInt(s.dataset.val);
+    s.classList.toggle('filled', v <= val);
+    s.classList.toggle('empty', v > val);
+  });
+};
+
+window.submitReview = async function() {
+  if (!currentUser) { openAuth(); return; }
+  if (!currentRating) { showToast('Please select a rating', true); return; }
+  const text = document.getElementById('reviewText').value.trim();
+  if (!text) { showToast('Please write a review', true); return; }
+  try {
+    await addDoc(collection(db,'books',currentBookId,'reviews'), {
+      userId: currentUser.uid,
+      userName: userData?.displayName || 'Learner',
+      rating: currentRating, text,
+      createdAt: serverTimestamp(),
+    });
+    showToast('Review submitted! 🌟');
+    await loadReviews(currentBookId);
+    document.getElementById('reviewText').value = '';
+    currentRating = 0;
+    document.querySelectorAll('.star').forEach(s => { s.classList.remove('filled'); s.classList.add('empty'); });
+  } catch(e) { showToast('Failed to submit review', true); }
+};
+
+// ——— GIVEAWAYS ———
+async function loadGiveaways() {
+  const grid = document.getElementById('giveawayGrid');
+  try {
+    const snap = await getDocs(query(
+      collection(db,'giveaways'),
+      where('active','==',true),
+      orderBy('createdAt','desc')
+    ));
+    if (snap.empty) {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text2);">No active giveaways right now. Check back soon!</div>';
+      return;
+    }
+    grid.innerHTML = '';
+    const now = Date.now();
+    snap.forEach(d => {
+      const g = {id:d.id,...d.data()};
+      const expiry = g.expiresAt?.toMillis?.() || 0;
+      const timeLeft = Math.max(0, expiry - now);
+      const days = Math.floor(timeLeft/86400000);
+      const hrs = Math.floor((timeLeft%86400000)/3600000);
+      const myTickets = g.participants?.[currentUser?.uid]?.tickets || 0;
+      const totalTickets = g.totalTickets || 0;
+      const winProb = totalTickets > 0 ? ((myTickets/totalTickets)*100).toFixed(1) : 0;
+      const reqBadges = g.requiredBadges || [];
+      const canEnter = !reqBadges.length || reqBadges.every(b => userData?.badges?.includes(b));
+
+      grid.innerHTML += `<div class="giveaway-card">
+        <div style="font-size:0.75rem;font-family:'JetBrains Mono',monospace;color:var(--accent3);margin-bottom:0.5rem;letter-spacing:1px;">ACTIVE GIVEAWAY</div>
+        <div class="giveaway-prize">🎁 ${g.title||'Prize Giveaway'}</div>
+        <div class="giveaway-meta">Prize: ${g.prize||'TBD'} · Cost: ${g.ticketCost||50} XP/ticket</div>
+        ${reqBadges.length ? `<div style="font-size:0.78rem;color:var(--accent);margin-bottom:0.75rem;">Required Badges: ${reqBadges.map(b=>{const badge=BADGES.find(x=>x.id===b);return badge?badge.icon+' '+badge.name:b;}).join(', ')}</div>` : ''}
+        <div class="ticket-row">
+          ${myTickets > 0
+            ? `<span class="ticket-count">🎫 ${myTickets} ticket${myTickets>1?'s':''}</span>
+               <button class="btn-primary" style="padding:0.5rem 1rem;font-size:0.85rem;" onclick="buyTicket('${g.id}',${g.ticketCost||50})">+1 Ticket</button>
+               <button class="btn-secondary" style="padding:0.5rem 1rem;font-size:0.85rem;" onclick="viewGwStats('${g.id}')">📊 Stats</button>`
+            : canEnter
+              ? `<button class="btn-primary" style="padding:0.5rem 1rem;font-size:0.85rem;" onclick="enterGiveaway('${g.id}',${g.ticketCost||50})">Enter (${g.ticketCost||50} XP)</button>`
+              : `<span style="font-size:0.82rem;color:var(--text2);">🔒 Badge required to enter</span>`
+          }
+        </div>
+        ${myTickets > 0 ? `<div style="font-size:0.8rem;color:var(--text2);margin-top:0.75rem;">Win probability: <span style="color:var(--accent2);font-weight:600;">${winProb}%</span></div>` : ''}
+        <div class="countdown-timer" id="gw-countdown-${g.id}">⏳ ${days}d ${hrs}h remaining</div>
+      </div>`;
+    });
+  } catch(e) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--accent3);">Failed to load giveaways.</div>';
+  }
+}
+
+window.enterGiveaway = async function(gwId, cost) {
+  if (!currentUser || !userData) { openAuth(); return; }
+  if ((userData.xp||0) < cost) { showToast(`Need ${cost} XP to enter`, true); return; }
+  try {
+    const ref = doc(db,'giveaways',gwId);
+    const updates = {};
+    updates[`participants.${currentUser.uid}`] = { tickets: 1, joinedAt: serverTimestamp() };
+    updates['totalTickets'] = increment(1);
+    await updateDoc(ref, updates);
+    await updateDoc(doc(db,'users',currentUser.uid), { xp: increment(-cost) });
+    userData.xp -= cost;
+    showToast('🎉 Entered giveaway! Good luck!');
+    renderProfile();
+    loadGiveaways();
+  } catch(e) { showToast('Failed to enter: '+e.message, true); }
+};
+
+window.buyTicket = async function(gwId, cost) {
+  if (!currentUser || !userData) { openAuth(); return; }
+  if ((userData.xp||0) < cost) { showToast(`Need ${cost} XP for a ticket`, true); return; }
+  try {
+    const ref = doc(db,'giveaways',gwId);
+    const updates = {};
+    updates[`participants.${currentUser.uid}.tickets`] = increment(1);
+    updates['totalTickets'] = increment(1);
+    await updateDoc(ref, updates);
+    await updateDoc(doc(db,'users',currentUser.uid), { xp: increment(-cost) });
+    userData.xp -= cost;
+    showToast('🎫 Extra ticket purchased!');
+    renderProfile();
+    loadGiveaways();
+  } catch(e) { showToast('Failed: '+e.message, true); }
+};
+
+window.viewGwStats = async function(gwId) {
+  try {
+    const snap = await getDoc(doc(db,'giveaways',gwId));
+    const g = snap.data();
+    const participants = g.participants || {};
+    const total = g.totalTickets || 0;
+    const myTickets = participants[currentUser?.uid]?.tickets || 0;
+    const totalUsers = Object.keys(participants).length;
+    const winProb = total > 0 ? ((myTickets/total)*100).toFixed(2) : 0;
+
+    document.getElementById('gwStatsBody').innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
+        <div style="background:var(--surface);border-radius:12px;padding:1.25rem;text-align:center;">
+          <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--accent2);">${totalUsers}</div>
+          <div style="font-size:0.82rem;color:var(--text2);">Total Entrants</div>
+        </div>
+        <div style="background:var(--surface);border-radius:12px;padding:1.25rem;text-align:center;">
+          <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--accent);">${total}</div>
+          <div style="font-size:0.82rem;color:var(--text2);">Total Tickets</div>
+        </div>
+        <div style="background:var(--surface);border-radius:12px;padding:1.25rem;text-align:center;">
+          <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--accent3);">${myTickets}</div>
+          <div style="font-size:0.82rem;color:var(--text2);">Your Tickets</div>
+        </div>
+        <div style="background:var(--surface);border-radius:12px;padding:1.25rem;text-align:center;">
+          <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:#fbbf24;">${winProb}%</div>
+          <div style="font-size:0.82rem;color:var(--text2);">Win Probability</div>
+        </div>
+      </div>
+      <p style="font-size:0.85rem;color:var(--text2);text-align:center;">Buy more tickets to increase your winning chance!</p>
+    `;
+    openModal('gwStatsModal');
+  } catch(e) { showToast('Failed to load stats', true); }
+};
+
+// ——— LEADERBOARD ———
+async function loadLeaderboard() {
+  const list = document.getElementById('leaderboardList');
+  try {
+    const snap = await getDocs(query(
+      collection(db,'users'),
+      where('isAdmin','!=',true),
+      orderBy('isAdmin'),
+      orderBy('xp','desc'),
+      limit(50)
+    ));
+    list.innerHTML = '';
+    let rank = 0;
+    snap.forEach(d => {
+      const u = d.data();
+      if (u.isAdmin || u.banned) return;
+      rank++;
+      const lvl = getCurrentLevel(u.xp||0);
+      const badges = (u.badges||[]).map(bid=>{const b=BADGES.find(x=>x.id===bid);return b?b.icon:'';}).join('');
+      const rankClass = rank===1?'gold':rank===2?'silver':rank===3?'bronze':'';
+      list.innerHTML += `<div class="lb-item" onclick="showPubProfile('${d.id}')">
+        <div class="lb-rank ${rankClass}">${rank<=3?['🥇','🥈','🥉'][rank-1]:rank}</div>
+        <div class="lb-avatar">${u.photoURL ? `<img src="${u.photoURL}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"/>` : '👤'}</div>
+        <div class="lb-info">
+          <div class="lb-name">${u.displayName||'Learner'}</div>
+          <div class="lb-level">Level ${lvl.level} · ${lvl.title} ${badges}</div>
+        </div>
+        <div class="lb-xp">⚡${(u.xp||0).toLocaleString()}</div>
+      </div>`;
+    });
+    if (!rank) list.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--text2);">No users yet. Be the first!</div>';
+  } catch(e) {
+    list.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--accent3);">Failed to load leaderboard.</div>';
+  }
+}
+
+window.showPubProfile = async function(uid) {
+  try {
+    const snap = await getDoc(doc(db,'users',uid));
+    const u = snap.data();
+    if (!u || u.isAdmin) return;
+    const lvl = getCurrentLevel(u.xp||0);
+    const badgesHtml = (u.badges||[]).map(bid=>{
+      const b = BADGES.find(x=>x.id===bid);
+      return b ? `<div class="badge-item earned" style="font-size:0.75rem;">${b.icon} ${b.name}</div>` : '';
+    }).join('');
+    document.getElementById('pubProfileContent').innerHTML = `
+      <div class="pub-avatar">${u.photoURL?`<img src="${u.photoURL}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"/>`:'👤'}</div>
+      <div style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;">${u.displayName||'Learner'}</div>
+      <div style="color:var(--accent2);font-size:0.85rem;margin-top:0.3rem;">Level ${lvl.level} · ${lvl.title}</div>
+      <div style="color:var(--text2);font-size:0.8rem;margin-top:0.3rem;">Joined ${u.joinedAt?.toDate?.()?.toLocaleDateString?.()}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;color:var(--accent);margin:1rem 0;">⚡ ${(u.xp||0).toLocaleString()} XP</div>
+      <div class="pub-badges">${badgesHtml||'<span style="color:var(--text2);font-size:0.85rem;">No badges yet</span>'}</div>
+    `;
+    openModal('pubProfileModal');
+  } catch(e) {}
+};
+
+// ——— NOTIFICATIONS ———
+function subscribeNotifications() {
+  if (!currentUser) return;
+  unsubNotif = onSnapshot(
+    query(collection(db,'users',currentUser.uid,'notifications'), orderBy('createdAt','desc'), limit(20)),
+    snap => {
+      const list = document.getElementById('notifList');
+      list.innerHTML = '';
+      let unreadCount = 0;
+      snap.forEach(d => {
+        const n = d.data();
+        if (!n.read) unreadCount++;
+        list.innerHTML += `<div class="notif-item ${n.read?'':'unread'}" onclick="markRead('${d.id}')">
+          ${n.message}
+          <div class="notif-time">${n.createdAt?.toDate?.()?.toLocaleString()||''}</div>
+        </div>`;
+      });
+      if (snap.empty) list.innerHTML = '<div class="notif-empty">No notifications yet</div>';
+      const badge = document.getElementById('notifBadge');
+      badge.style.display = unreadCount > 0 ? 'flex' : 'none';
+      badge.textContent = unreadCount;
+    }
+  );
+}
+
+window.markRead = async function(notifId) {
+  if (!currentUser) return;
+  try {
+    await updateDoc(doc(db,'users',currentUser.uid,'notifications',notifId), { read: true });
+  } catch(e) {}
+};
+window.markAllRead = async function() {
+  if (!currentUser) return;
+  const snap = await getDocs(collection(db,'users',currentUser.uid,'notifications'));
+  snap.forEach(async d => {
+    if (!d.data().read) await updateDoc(d.ref, { read: true });
+  });
+};
+
+// ——— MESSAGE ADMIN ———
+window.openMessageAdmin = function() {
+  if (!currentUser) { openAuth(); return; }
+  openModal('msgAdminModal');
+};
+window.sendAdminMessage = async function() {
+  if (!currentUser || !userData) { openAuth(); return; }
+  if ((userData.xp||0) < 10) { showToast('Need 10 XP to message admin', true); return; }
+  const msg = document.getElementById('adminMsgText').value.trim();
+  if (!msg) { showToast('Please enter a message', true); return; }
+  try {
+    await addDoc(collection(db,'adminMessages'), {
+      uid: currentUser.uid,
+      userName: userData.displayName || 'Learner',
+      message: msg, read: false, pinned: false,
+      createdAt: serverTimestamp(),
+    });
+    await updateDoc(doc(db,'users',currentUser.uid), { xp: increment(-10) });
+    userData.xp -= 10;
+    renderProfile();
+    closeModal('msgAdminModal');
+    document.getElementById('adminMsgText').value = '';
+    showToast('✉️ Message sent to admin! -10 XP');
+  } catch(e) { showToast('Failed to send: '+e.message, true); }
+};
+
+// ——— STATS ———
+async function loadStats() {
+  try {
+    const [usersSnap, statsSnap] = await Promise.all([
+      getDocs(query(collection(db,'users'), limit(1))),
+      getDoc(doc(db,'config','stats')),
+    ]);
+    // Count users
+    const countSnap = await getDocs(collection(db,'users'));
+    document.getElementById('statUsers').textContent = countSnap.size.toLocaleString();
+
+    if (statsSnap.exists()) {
+      const s = statsSnap.data();
+      document.getElementById('statXp').textContent = (s.totalXp||0).toLocaleString();
+      document.getElementById('statUnlocks').textContent = (s.totalUnlocks||0).toLocaleString();
+    }
+  } catch(e) {}
+}
+
+async function loadMarquee() {
+  try {
+    const snap = await getDoc(doc(db,'config','site'));
+    if (snap.exists() && snap.data().marquee) {
+      const text = snap.data().marquee;
+      const track = document.getElementById('marqueeTrack');
+      const items = text.split('|').map(t => `<span class="marquee-item">${t.trim()}</span>`).join('');
+      track.innerHTML = items + items;
+    }
+    // Pinned messages
+    const pinnedSnap = await getDocs(query(
+      collection(db,'adminMessages'),
+      where('pinned','==',true),
+      orderBy('createdAt','desc'),
+      limit(3)
+    ));
+    if (!pinnedSnap.empty) {
+      const track = document.getElementById('marqueeTrack');
+      pinnedSnap.forEach(d => {
+        const m = d.data();
+        const item = document.createElement('span');
+        item.className = 'marquee-item';
+        item.innerHTML = `📌 <span>${m.userName}</span>: ${m.message}`;
+        track.prepend(item);
+      });
+    }
+  } catch(e) {}
+}
+
+// ——— FORMS APP ———
+function loadFormsApp() {
+  const wrap = document.getElementById('forms-iframe-wrap');
+  const loaderWrap = document.getElementById('forms-loader-wrap');
+  const script = document.createElement('script');
+  script.src = 'https://forms.app/cdn/embed.js';
+  script.async = true;
+  script.defer = true;
+  script.onload = () => {
+    try {
+      new formsapp('6976dd04bd234eb75ef77e8a','fullscreen',{},'https://cup8qd4s.forms.app');
+      loaderWrap.style.display = 'none';
+      wrap.style.display = 'block';
+    } catch(e) {
+      loaderWrap.style.display = 'none';
+      wrap.style.display = 'block';
+    }
+  };
+  script.onerror = () => {
+    loaderWrap.style.display = 'none';
+    wrap.innerHTML = '<p style="color:var(--text2);text-align:center;padding:2rem;">Form could not be loaded. Please try again later.</p>';
+  };
+  document.head.appendChild(script);
+}
+
+// ——— HONEYPOT ———
+function initHoneypot() {
+  const trap = document.createElement('div');
+  trap.style.cssText = 'position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;';
+  trap.innerHTML = '<input type="text" name="hp_check" tabindex="-1" autocomplete="off"/>';
+  document.body.appendChild(trap);
+  trap.querySelector('input').addEventListener('input', () => {
+    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#000;color:red;font-family:monospace;font-size:1.2rem;">⛔ Access Denied — Bot Detected</div>';
+  });
+}
+initHoneypot();
+
+// ——— UI HELPERS ———
+window.switchTab = function(tab, el) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  if (el) el.classList.add('active');
+  if (tab==='library' && allBooks.length===0) loadLibrary();
+  if (tab==='leaderboard') loadLeaderboard();
+  if (tab==='giveaway') loadGiveaways();
+};
+
+window.openModal = function(id) { document.getElementById(id).classList.add('open'); };
+window.closeModal = function(id) { document.getElementById(id).classList.remove('open'); };
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+window.toggleTheme = function() {
+  const html = document.documentElement;
+  html.setAttribute('data-theme', html.getAttribute('data-theme')==='dark'?'light':'dark');
+  localStorage.setItem('theme', html.getAttribute('data-theme'));
+};
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
+
+window.toggleNotif = function() {
+  document.getElementById('notifPanel').classList.toggle('open');
+};
+document.addEventListener('click', e => {
+  const panel = document.getElementById('notifPanel');
+  if (!panel.contains(e.target) && !e.target.closest('.icon-btn[onclick*="toggleNotif"]')) {
+    panel.classList.remove('open');
+  }
+});
+
+function showToast(msg, isError=false) {
+  const t = document.createElement('div');
+  t.style.cssText = `
+    position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(80px);
+    background:${isError?'rgba(255,50,50,0.9)':'rgba(20,20,40,0.95)'};
+    border:1px solid ${isError?'rgba(255,100,100,0.3)':'var(--border)'};
+    color:#fff;padding:0.75rem 1.5rem;border-radius:12px;font-size:0.9rem;
+    z-index:9999;backdrop-filter:blur(10px);
+    transition:transform 0.3s ease;max-width:90vw;text-align:center;
+    box-shadow:0 8px 30px rgba(0,0,0,0.5);
+  `;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ t.style.transform='translateX(-50%) translateY(0)'; }));
+  setTimeout(()=>{ t.style.transform='translateX(-50%) translateY(80px)'; setTimeout(()=>t.remove(),300); },3500);
+}
+</script>
+</body>
+</html>
